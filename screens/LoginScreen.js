@@ -4,9 +4,9 @@ import global from "../global";
 import logo from "../assets/no-logo.png";
 import { Input, Button } from "@rneui/themed";
 import { showMessage } from "react-native-flash-message";
-import { auth, db } from "../database/firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { collection, where, limit, getDocs, query } from "firebase/firestore";
+import { auth } from "../database/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { signIn, findUser } from "../database/firebaseFunctions";
 
 const LoginScreen = ({ navigation }) => {
   const [usuario, setUsuario] = useState("");
@@ -30,14 +30,8 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    const q = query(
-      collection(db, "usuarios"),
-      where("usuario", "==", usuario),
-      limit(1)
-    );
-    const user = await getDocs(q);
-
-    if (user.empty) {
+    const user = await findUser(usuario);
+    if (user == null) {
       showMessage({
         message: "Error de inicio de sesión",
         description: "Usuario no encontrado.",
@@ -46,37 +40,8 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    const email = user.docs[0].data().email;
-    signInWithEmailAndPassword(auth, email, contraseña)
-      .then(() => {
-        console.log("conseguido!");
-      })
-      .catch((error) => {
-        showLogInError(error);
-      });
-  };
-
-  const showLogInError = (error) => {
-    if (error.code === "auth/invalid-login-credentials") {
-      showMessage({
-        message: "Error de inicio de sesión",
-        description: "La contraseña es incorrecta.",
-        type: "danger",
-      });
-    } else if (error.code === "auth/too-many-requests") {
-      showMessage({
-        message: "Error de inicio de sesión",
-        description:
-          "Has fallado la contraseña demasiadas veces. Inténtalo más tarde o restablece la contraseña.",
-        type: "danger",
-      });
-    } else {
-      showMessage({
-        message: "Error de inicio de sesión",
-        description: "Ocurrió un error al iniciar sesión.",
-        type: "danger",
-      });
-    }
+    const email = user.email;
+    signIn(email, contraseña);
   };
 
   return (

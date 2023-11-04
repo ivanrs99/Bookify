@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import global from "../global";
 import imgUser from "../assets/img_user.png";
@@ -7,20 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 import { showMessage } from "react-native-flash-message";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { auth, db, storage } from "../database/firebase";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import {
-  collection,
-  where,
-  limit,
-  getDocs,
-  addDoc,
-  query,
-} from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
+import { findUser, signUp } from "../database/firebaseFunctions";
 
 const RegisterScreen = ({ navigation }) => {
   const [nombre, setNombre] = useState("");
@@ -29,7 +16,6 @@ const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [imagen, setImagen] = useState(null);
-  const userFound = useRef(false);
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -59,8 +45,8 @@ const RegisterScreen = ({ navigation }) => {
       return;
     }
 
-    await findUser();
-    if (userFound.current) {
+    const user = await findUser(usuario);
+    if (user != null) {
       showMessage({
         message: "Error de registro",
         description: "Ya existe un usuario con ese nombre de usuario.",
@@ -78,80 +64,7 @@ const RegisterScreen = ({ navigation }) => {
       return;
     }
 
-    try {
-      await createUserWithEmailAndPassword(auth, email, contraseña);
-      if (imagen) uploadImg(imagen, usuario);
-      const usuariosRef = collection(db, "usuarios");
-      await addDoc(usuariosRef, {
-        usuario: usuario,
-        email: email,
-        nombre: nombre,
-        apellidos: apellidos,
-      });
-
-      showMessage({
-        message: "Bienvenido!",
-        description: "Usuario registrado con éxito.",
-        type: "success",
-      });
-
-      logIn();
-    } catch (error) {
-      showSignUpError(error);
-    }
-  };
-
-  const logIn = () => {
-    signInWithEmailAndPassword(auth, email, contraseña)
-      .then(() => {
-        console.log("conseguido!");
-      })
-      .catch((error) => {
-        showLogInError(error);
-      });
-  };
-
-  const showSignUpError = (error) => {
-    if (error.code === "auth/email-already-in-use") {
-      showMessage({
-        message: "Error de registro",
-        description: "Email ya en uso.",
-        type: "danger",
-      });
-    } else if (error.code === "auth/invalid-email") {
-      showMessage({
-        message: "Error de registro",
-        description: "El email no tiene un formato correcto.",
-        type: "danger",
-      });
-    } else {
-      showMessage({
-        message: "Error de registro",
-        description: error.message,
-        type: "danger",
-      });
-    }
-  };
-
-  const uploadImg = async (imagen, nombre) => {
-    const response = await fetch(imagen);
-    const blob = await response.blob();
-    const storageRef = ref(storage, "perfil/" + nombre);
-    await uploadBytes(storageRef, blob);
-  };
-
-  const findUser = async () => {
-    userFound.current = false;
-    const q = query(
-      collection(db, "usuarios"),
-      where("usuario", "==", usuario),
-      limit(1)
-    );
-    const user = await getDocs(q);
-
-    if (!user.empty) {
-      userFound.current = true;
-    }
+    signUp(email, contraseña, usuario, nombre, apellidos, imagen);
   };
 
   return (
