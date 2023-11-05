@@ -15,7 +15,7 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user);
+        navigation.navigate("ReviewCreator");
       }
     });
   }, []);
@@ -41,7 +41,9 @@ const LoginScreen = ({ navigation }) => {
     }
 
     const email = user.email;
-    signIn(email, contraseña);
+    signIn(email, contraseña).then(() => {
+      navigation.navigate("ReviewCreator");
+    });
   };
 
   return (

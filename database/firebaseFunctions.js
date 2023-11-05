@@ -3,6 +3,7 @@ import { auth, db, storage } from "../database/firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { ref, uploadBytes } from "firebase/storage";
 import {
@@ -15,8 +16,8 @@ import {
 } from "firebase/firestore";
 
 // Iniciar sesión
-const signIn = (email, contraseña) => {
-  signInWithEmailAndPassword(auth, email, contraseña)
+const signIn = async (email, contraseña) => {
+  return signInWithEmailAndPassword(auth, email, contraseña)
     .then(() => {
       console.log("conseguido!");
     })
@@ -131,4 +132,15 @@ const uploadImg = async (imagen, nombre) => {
   await uploadBytes(storageRef, blob);
 };
 
-export { signIn, findUser, signUp };
+// Cerrar sesión
+const signOutUser = () => {
+  signOut(auth)
+    .then(() => {
+      console.log("Sesión cerrada.");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+export { signIn, findUser, signUp, signOutUser };
