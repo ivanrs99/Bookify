@@ -9,9 +9,10 @@ import {
 import global from "../global";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { FontAwesome } from "@expo/vector-icons";
-import { signOutUser } from "../database/firebaseFunctions";
 import { Input, Button, AirbnbRating } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
+import { auth } from "../database/firebase";
+import { addReview } from "../database/firebaseFunctions";
 
 const ReviewCreatorScreen = ({ navigation }) => {
   const [titulo, setTitulo] = useState("");
@@ -25,9 +26,18 @@ const ReviewCreatorScreen = ({ navigation }) => {
     navigation.goBack();
   };
 
-  const uploadReview = () => {
-    console.log("Review publicada");
-    console.log(puntuacion);
+  const publish = () => {
+    const user = auth.currentUser;
+    if (!titulo || !autor) {
+      showMessage({
+        message: "Error al crear la reseña",
+        description: "El título y el autor son campos obligatorios.",
+        type: "danger",
+      });
+      return;
+    }
+
+    addReview(user.uid, titulo, autor, puntuacion, descripcion, imagen);
   };
 
   const pickImage = async () => {
@@ -116,7 +126,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
             color: global.PRIMARY_COLOR,
           }}
           containerStyle={{ width: "50%" }}
-          onPress={uploadReview}
+          onPress={publish}
         />
       </View>
     </View>
