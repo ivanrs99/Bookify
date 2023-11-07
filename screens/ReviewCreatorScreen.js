@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   Image,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
 } from "react-native";
 import global from "../global";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { FontAwesome } from "@expo/vector-icons";
 import { signOutUser } from "../database/firebaseFunctions";
 import { Input, Button, AirbnbRating } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
@@ -83,7 +83,25 @@ const ReviewCreatorScreen = ({ navigation }) => {
           placeholder="Escribe tu opinión... (opcional)"
           multiline={true}
         />
-        {imagen && <Image source={{ uri: imagen }} style={styles.libroImg} />}
+        {imagen && (
+          <View>
+            <Image source={{ uri: imagen }} style={styles.libroImg} />
+            <TouchableOpacity
+              onPress={() => setImagen(null)}
+              style={{
+                position: "absolute",
+                top: -10,
+                right: -10,
+                backgroundColor: "black",
+                zIndex: 1,
+                paddingHorizontal: 2,
+                borderRadius: 20,
+              }}
+            >
+              <FontAwesome name="close" size={22} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       <View style={styles.groupButtons}>
         <Button buttonStyle={styles.button} onPress={pickImage}>
@@ -148,8 +166,8 @@ const styles = StyleSheet.create({
     height: 106,
   },
   libroImg: {
-    height: 145,
-    width: 100,
+    height: 165,
+    width: 120,
     marginBottom: 20,
   },
 });

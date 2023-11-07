@@ -5,6 +5,7 @@ import {
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import ReviewCreatorScreen from "../screens/ReviewCreatorScreen";
+import SplashScreen from "../screens/SplashScreen";
 
 const Stack = createStackNavigator();
 
@@ -12,6 +13,16 @@ const screenOptions = {
   headerShown: false,
   animationEnabled: true,
   cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+};
+
+const InitialStackNavigator = () => {
+  return (
+    <Stack.Navigator initialRouteName="Splash" screenOptions={screenOptions}>
+      <Stack.Screen name="Splash" component={SplashScreen} />
+      <Stack.Screen name="LoginStack" component={LoginStackNavigator} />
+      <Stack.Screen name="ReviewCreator" component={ReviewCreatorScreen} />
+    </Stack.Navigator>
+  );
 };
 
 const LoginStackNavigator = () => {
@@ -24,4 +35,4 @@ const LoginStackNavigator = () => {
   );
 };
 
-export { LoginStackNavigator };
+export { InitialStackNavigator, LoginStackNavigator };

@@ -1,24 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import global from "../global";
 import logo from "../assets/no-logo.png";
 import { Input, Button } from "@rneui/themed";
 import { showMessage } from "react-native-flash-message";
-import { auth } from "../database/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import { signIn, findUser } from "../database/firebaseFunctions";
 
 const LoginScreen = ({ navigation }) => {
   const [usuario, setUsuario] = useState("");
   const [contraseña, setContraseña] = useState("");
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigation.navigate("ReviewCreator");
-      }
-    });
-  }, []);
 
   const login = async () => {
     if (!usuario || !contraseña) {
