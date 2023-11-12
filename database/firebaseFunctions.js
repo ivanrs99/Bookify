@@ -17,13 +17,9 @@ import {
 
 // Iniciar sesión
 const signIn = async (email, contraseña) => {
-  return signInWithEmailAndPassword(auth, email, contraseña)
-    .then(() => {
-      console.log("conseguido!");
-    })
-    .catch((error) => {
-      showLogInError(error);
-    });
+  return signInWithEmailAndPassword(auth, email, contraseña).catch((error) => {
+    showLogInError(error);
+  });
 };
 
 const showLogInError = (error) => {

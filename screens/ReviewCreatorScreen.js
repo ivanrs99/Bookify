@@ -12,7 +12,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Input, Button, AirbnbRating } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import { auth } from "../database/firebase";
-import { addReview } from "../database/firebaseFunctions";
+import { addReview, signOutUser } from "../database/firebaseFunctions";
+import { showMessage } from "react-native-flash-message";
 
 const ReviewCreatorScreen = ({ navigation }) => {
   const [titulo, setTitulo] = useState("");
@@ -92,6 +93,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
           onChangeText={setDescripcion}
           placeholder="Escribe tu opinión... (opcional)"
           multiline={true}
+          maxLength={250}
         />
         {imagen && (
           <View>
@@ -173,7 +175,7 @@ const styles = StyleSheet.create({
     width: "95%",
     marginBottom: 20,
     padding: 5,
-    height: 106,
+    maxHeight: 110,
   },
   libroImg: {
     height: 165,
