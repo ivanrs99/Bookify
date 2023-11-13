@@ -8,7 +8,7 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigation.navigate("ReviewCreator");
+        navigation.navigate("HomeStack");
       } else {
         navigation.navigate("LoginStack");
       }

@@ -8,7 +8,7 @@ import * as NavigationBar from "expo-navigation-bar";
 
 const App = () => {
   //NavigationBar.setPositionAsync("absolute");
-  NavigationBar.setBackgroundColorAsync(global.PRIMARY_COLOR);
+  //NavigationBar.setBackgroundColorAsync(global.PRIMARY_COLOR);
 
   return (
     <NavigationContainer>

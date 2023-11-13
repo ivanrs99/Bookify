@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }) => {
 
     const email = user.email;
     signIn(email, contraseña).then(() => {
-      navigation.navigate("ReviewCreator");
+      navigation.navigate("HomeStack");
     });
   };
 
