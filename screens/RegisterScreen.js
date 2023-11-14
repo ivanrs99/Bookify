@@ -7,7 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 import { showMessage } from "react-native-flash-message";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { findUser, signUp } from "../database/firebaseFunctions";
+import { findUser, signUp, signIn } from "../database/firebaseFunctions";
 
 const RegisterScreen = ({ navigation }) => {
   const [nombre, setNombre] = useState("");
@@ -64,9 +64,37 @@ const RegisterScreen = ({ navigation }) => {
       return;
     }
 
-    signUp(email, contraseña, usuario, nombre, apellidos, imagen).then(() => {
-      navigation.navigate("HomeStack");
-    });
+    signUp(email, contraseña, usuario, nombre, apellidos, imagen)
+      .then(() => {
+        signIn(email, contraseña).then(() => {
+          navigation.navigate("HomeStack");
+        });
+      })
+      .catch((error) => {
+        showSignUpError(error);
+      });
+  };
+
+  const showSignUpError = (error) => {
+    if (error.code === "auth/email-already-in-use") {
+      showMessage({
+        message: "Error de registro",
+        description: "Email ya en uso.",
+        type: "danger",
+      });
+    } else if (error.code === "auth/invalid-email") {
+      showMessage({
+        message: "Error de registro",
+        description: "El email no tiene un formato correcto.",
+        type: "danger",
+      });
+    } else {
+      showMessage({
+        message: "Error de registro",
+        description: error.message,
+        type: "danger",
+      });
+    }
   };
 
   return (

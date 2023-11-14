@@ -12,7 +12,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Input, Button, AirbnbRating } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import { auth } from "../database/firebase";
-import { addReview, signOutUser } from "../database/firebaseFunctions";
+import { addReview } from "../database/firebaseFunctions";
 import { showMessage } from "react-native-flash-message";
 
 const ReviewCreatorScreen = ({ navigation }) => {
@@ -22,13 +22,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
   const [puntuacion, setPuntuacion] = useState(1);
   const [imagen, setImagen] = useState(null);
 
-  const logOut = () => {
-    signOutUser();
-    navigation.goBack();
-  };
-
   const publish = () => {
-    const user = auth.currentUser;
     if (!titulo || !autor) {
       showMessage({
         message: "Error al crear la reseña",
@@ -38,6 +32,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
       return;
     }
 
+    const user = auth.currentUser;
     addReview(user.uid, titulo, autor, puntuacion, descripcion, imagen);
   };
 
@@ -61,7 +56,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => logOut()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back-circle" size={40} color="white" />
         </TouchableOpacity>
       </View>

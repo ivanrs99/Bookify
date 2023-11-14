@@ -17,32 +17,7 @@ import {
 
 // Iniciar sesión
 const signIn = async (email, contraseña) => {
-  return signInWithEmailAndPassword(auth, email, contraseña).catch((error) => {
-    showLogInError(error);
-  });
-};
-
-const showLogInError = (error) => {
-  if (error.code === "auth/invalid-login-credentials") {
-    showMessage({
-      message: "Error de inicio de sesión",
-      description: "La contraseña es incorrecta.",
-      type: "danger",
-    });
-  } else if (error.code === "auth/too-many-requests") {
-    showMessage({
-      message: "Error de inicio de sesión",
-      description:
-        "Has fallado la contraseña demasiadas veces. Inténtalo más tarde o restablece la contraseña.",
-      type: "danger",
-    });
-  } else {
-    showMessage({
-      message: "Error de inicio de sesión",
-      description: "Ocurrió un error al iniciar sesión.",
-      type: "danger",
-    });
-  }
+  return signInWithEmailAndPassword(auth, email, contraseña);
 };
 
 // Registrar usuario
@@ -54,49 +29,21 @@ const signUp = async (
   apellidos,
   imagen
 ) => {
-  try {
-    await createUserWithEmailAndPassword(auth, email, contraseña);
-    const usuariosRef = collection(db, "usuarios");
-    await addDoc(usuariosRef, {
-      usuario: usuario,
-      email: email,
-      nombre: nombre,
-      apellidos: apellidos,
-    });
-    if (imagen) uploadImg(imagen, usuario, "perfil/");
+  await createUserWithEmailAndPassword(auth, email, contraseña);
+  const usuariosRef = collection(db, "usuarios");
+  await addDoc(usuariosRef, {
+    usuario: usuario,
+    email: email,
+    nombre: nombre,
+    apellidos: apellidos,
+  });
+  if (imagen) uploadImg(imagen, usuario, "perfil/");
 
-    showMessage({
-      message: "Bienvenido!",
-      description: "Usuario registrado con éxito.",
-      type: "success",
-    });
-
-    signIn(email, contraseña);
-  } catch (error) {
-    showSignUpError(error);
-  }
-};
-
-const showSignUpError = (error) => {
-  if (error.code === "auth/email-already-in-use") {
-    showMessage({
-      message: "Error de registro",
-      description: "Email ya en uso.",
-      type: "danger",
-    });
-  } else if (error.code === "auth/invalid-email") {
-    showMessage({
-      message: "Error de registro",
-      description: "El email no tiene un formato correcto.",
-      type: "danger",
-    });
-  } else {
-    showMessage({
-      message: "Error de registro",
-      description: error.message,
-      type: "danger",
-    });
-  }
+  showMessage({
+    message: "Bienvenido!",
+    description: "Usuario registrado con éxito.",
+    type: "success",
+  });
 };
 
 // Buscar un usuario en específico

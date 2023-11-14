@@ -31,9 +31,42 @@ const LoginScreen = ({ navigation }) => {
     }
 
     const email = user.email;
-    signIn(email, contraseña).then(() => {
-      navigation.navigate("HomeStack");
-    });
+    signIn(email, contraseña)
+      .then(() => {
+        clearData();
+        navigation.navigate("HomeStack");
+      })
+      .catch((error) => {
+        showLogInError(error);
+      });
+  };
+
+  const clearData = () => {
+    setUsuario("");
+    setContraseña("");
+  };
+
+  const showLogInError = (error) => {
+    if (error.code === "auth/invalid-login-credentials") {
+      showMessage({
+        message: "Error de inicio de sesión",
+        description: "La contraseña es incorrecta.",
+        type: "danger",
+      });
+    } else if (error.code === "auth/too-many-requests") {
+      showMessage({
+        message: "Error de inicio de sesión",
+        description:
+          "Has fallado la contraseña demasiadas veces. Inténtalo más tarde o restablece la contraseña.",
+        type: "danger",
+      });
+    } else {
+      showMessage({
+        message: "Error de inicio de sesión",
+        description: "Ocurrió un error al iniciar sesión.",
+        type: "danger",
+      });
+    }
   };
 
   return (
@@ -45,6 +78,7 @@ const LoginScreen = ({ navigation }) => {
           label="Usuario"
           labelStyle={{ color: "black", fontWeight: "normal" }}
           placeholder="Usuario"
+          value={usuario}
           onChangeText={(value) => setUsuario(value)}
         />
         <Input
@@ -52,6 +86,7 @@ const LoginScreen = ({ navigation }) => {
           labelStyle={{ color: "black", fontWeight: "normal", marginTop: 10 }}
           placeholder="Contraseña"
           secureTextEntry={true}
+          value={contraseña}
           onChangeText={(value) => setContraseña(value)}
         />
         <Button
