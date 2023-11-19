@@ -1,15 +1,35 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import global from "../global";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import badface from "../assets/badface.png";
 
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("ReviewCreator")}>
-        <Ionicons name="arrow-back-circle" size={40} color="black" />
-      </TouchableOpacity>
-      <Text>INITIAL</Text>
+      <Image
+        source={badface}
+        style={{
+          width: 220,
+          height: 100,
+          resizeMode: "contain",
+          marginBottom: 5,
+        }}
+      />
+      <Text style={{ fontSize: 16, fontWeight: "bold", margin: 10 }}>
+        Todavía no hay ninguna reseña para ver
+      </Text>
+      <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+        <Text style={{ fontSize: 15 }}>
+          Pulsa{" "}
+          <Text
+            style={{ fontSize: 15, color: global.PRIMARY_COLOR }}
+            onPress={() => navigation.navigate("ReviewCreator")}
+          >
+            aquí
+          </Text>{" "}
+          para añadir la primera!
+        </Text>
+      </View>
     </View>
   );
 };

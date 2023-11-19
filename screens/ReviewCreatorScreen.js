@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -14,8 +14,24 @@ import * as ImagePicker from "expo-image-picker";
 import { auth } from "../database/firebase";
 import { addReview } from "../database/firebaseFunctions";
 import { showMessage } from "react-native-flash-message";
+import * as NavigationBar from "expo-navigation-bar";
 
 const ReviewCreatorScreen = ({ navigation }) => {
+  useEffect(() => {
+    const unsubscribeFocus = navigation.addListener("focus", () => {
+      NavigationBar.setBackgroundColorAsync(global.PRIMARY_COLOR);
+    });
+
+    const unsubscribeBlur = navigation.addListener("blur", () => {
+      NavigationBar.setBackgroundColorAsync("white");
+    });
+
+    return () => {
+      unsubscribeFocus();
+      unsubscribeBlur();
+    };
+  }, [navigation]);
+
   const [titulo, setTitulo] = useState("");
   const [autor, setAutor] = useState("");
   const [descripcion, setDescripcion] = useState("");
