@@ -49,7 +49,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
     }
 
     const user = auth.currentUser;
-    addReview(user.uid, titulo, autor, puntuacion, descripcion, imagen);
+    addReview(user.email, titulo, autor, puntuacion, descripcion, imagen);
   };
 
   const pickImage = async () => {

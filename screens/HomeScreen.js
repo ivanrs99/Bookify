@@ -1,9 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import global from "../global";
 import badface from "../assets/badface.png";
+import { auth } from "../database/firebase";
+import {
+  findSeguidos,
+  getReseñasSeguidos,
+  findUserByEmail,
+} from "../database/firebaseFunctions";
 
 const HomeScreen = ({ navigation }) => {
+  const [item, setItems] = useState([]);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    const user = auth.currentUser;
+    const seguidos = await findSeguidos(user.email);
+    const reseñas = await getReseñasSeguidos(seguidos);
+
+    if (reseñas.length > 0) {
+      createItemsList(reseñas);
+    }
+  };
+
+  const createItemsList = async (reseñas) => {
+    const items = [];
+    for (const reseña of reseñas) {
+      const userData = await findUserByEmail(reseña.usuario);
+      const item = {
+        usuario: userData,
+        reseña: reseña,
+        //imagen usuario
+        //imagen reseña
+      };
+      items.push(item);
+      console.log(item);
+    }
+
+    return items;
+  };
+
   return (
     <View style={styles.container}>
       <Image

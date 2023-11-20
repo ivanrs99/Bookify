@@ -46,11 +46,32 @@ const signUp = async (
   });
 };
 
-// Buscar un usuario en específico
+// Buscar un usuario por nombre de usuario
 const findUser = async (usuario) => {
   const q = query(
     collection(db, "usuarios"),
     where("usuario", "==", usuario),
+    limit(1)
+  );
+
+  try {
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const userData = querySnapshot.docs[0].data();
+      return userData;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error al buscar el usuario:", error);
+  }
+};
+
+// Buscar usuario desde un email
+const findUserByEmail = async (email) => {
+  const q = query(
+    collection(db, "usuarios"),
+    where("email", "==", email),
     limit(1)
   );
 
@@ -88,7 +109,7 @@ const signOutUser = () => {
 
 // Publicar reseña
 const addReview = async (
-  uid,
+  email,
   titulo,
   autor,
   puntuacion,
@@ -106,13 +127,14 @@ const addReview = async (
     const reseñasRef = collection(db, "reseñas");
     await addDoc(reseñasRef, {
       libro: book.id,
-      usuario: uid,
+      usuario: email,
       puntuacion: puntuacion,
       descripcion: descripcion,
       fecha: fechaActual.toISOString(),
     });
 
-    if (imagen) uploadImg(imagen, uid + fechaActual.toISOString(), "reseñas/");
+    if (imagen)
+      uploadImg(imagen, email + fechaActual.toISOString(), "reseñas/");
 
     showMessage({
       message: "Reseña publicada con éxito",
@@ -157,4 +179,50 @@ const findBook = async (titulo, autor) => {
   }
 };
 
-export { signIn, findUser, signUp, signOutUser, addReview };
+// Encontrar seguidos
+const findSeguidos = async (email) => {
+  const q = query(collection(db, "seguidos"), where("seguidor", "==", email));
+  const queryResult = await getDocs(q);
+  const seguidos = [];
+
+  queryResult.forEach((doc) => {
+    seguidos.push(doc.data().seguido);
+  });
+
+  if (queryResult.size > 0) {
+    return seguidos;
+  } else {
+    return null;
+  }
+};
+
+// Encontrar reseñas seguidos
+const getReseñasSeguidos = async (seguidos) => {
+  const reseñas = [];
+
+  for (const seguido of seguidos) {
+    const q = query(collection(db, "reseñas"), where("usuario", "==", seguido));
+    const queryResult = await getDocs(q);
+
+    queryResult.forEach((doc) => {
+      reseñas.push(doc.data());
+    });
+  }
+
+  const reseñasOrdenadas = reseñas.sort(
+    (a, b) => new Date(b.fecha) - new Date(a.fecha)
+  );
+
+  return reseñasOrdenadas;
+};
+
+export {
+  signIn,
+  findUser,
+  signUp,
+  signOutUser,
+  addReview,
+  findSeguidos,
+  getReseñasSeguidos,
+  findUserByEmail,
+};
