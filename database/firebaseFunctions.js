@@ -5,7 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   collection,
   where,
@@ -96,6 +96,17 @@ const uploadImg = async (imagen, nombre, ruta) => {
   await uploadBytes(storageRef, blob);
 };
 
+// Obtener imagen
+const getImg = async (ruta, nombre) => {
+  const imgRef = ref(storage, ruta + nombre);
+  try {
+    const url = await getDownloadURL(imgRef);
+    return url;
+  } catch (error) {
+    return null;
+  }
+};
+
 // Cerrar sesión
 const signOutUser = () => {
   signOut(auth)
@@ -124,6 +135,12 @@ const addReview = async (
     }
 
     const fechaActual = new Date();
+    let url = "";
+    if (imagen) {
+      await uploadImg(imagen, email + fechaActual.toISOString(), "reseñas/");
+      url = await getImg("reseñas/", email + fechaActual.toISOString());
+    }
+
     const reseñasRef = collection(db, "reseñas");
     await addDoc(reseñasRef, {
       libro: book.id,
@@ -131,10 +148,8 @@ const addReview = async (
       puntuacion: puntuacion,
       descripcion: descripcion,
       fecha: fechaActual.toISOString(),
+      url_img: url,
     });
-
-    if (imagen)
-      uploadImg(imagen, email + fechaActual.toISOString(), "reseñas/");
 
     showMessage({
       message: "Reseña publicada con éxito",
@@ -196,12 +211,12 @@ const findSeguidos = async (email) => {
   }
 };
 
-// Encontrar reseñas seguidos
-const getReseñasSeguidos = async (seguidos) => {
+// Encontrar reseñas de una lista de usuarios
+const getReseñasFromUsers = async (users) => {
   const reseñas = [];
 
-  for (const seguido of seguidos) {
-    const q = query(collection(db, "reseñas"), where("usuario", "==", seguido));
+  for (const user of users) {
+    const q = query(collection(db, "reseñas"), where("usuario", "==", user));
     const queryResult = await getDocs(q);
 
     queryResult.forEach((doc) => {
@@ -223,6 +238,7 @@ export {
   signOutUser,
   addReview,
   findSeguidos,
-  getReseñasSeguidos,
+  getReseñasFromUsers,
   findUserByEmail,
+  getImg,
 };
