@@ -56,30 +56,38 @@ const HomeScreen = ({ navigation }) => {
         <ActivityIndicator size={100} color={global.PRIMARY_COLOR} />
       ) : (
         <>
-          <Image
-            source={badface}
-            style={{
-              width: 220,
-              height: 100,
-              resizeMode: "contain",
-              marginBottom: 5,
-            }}
-          />
-          <Text style={{ fontSize: 16, fontWeight: "bold", margin: 10 }}>
-            Todavía no hay ninguna reseña para ver
-          </Text>
-          <View style={{ flexDirection: "row", alignItems: "baseline" }}>
-            <Text style={{ fontSize: 15 }}>
-              Pulsa{" "}
-              <Text
-                style={{ fontSize: 15, color: global.PRIMARY_COLOR }}
-                onPress={() => navigation.navigate("ReviewCreator")}
-              >
-                aquí
-              </Text>{" "}
-              para añadir la primera!
-            </Text>
-          </View>
+          {items.length > 0 ? (
+            <View style={styles.review}>
+              <ReviewItem />
+            </View>
+          ) : (
+            <>
+              <Image
+                source={badface}
+                style={{
+                  width: 220,
+                  height: 100,
+                  resizeMode: "contain",
+                  marginBottom: 5,
+                }}
+              />
+              <Text style={{ fontSize: 16, fontWeight: "bold", margin: 10 }}>
+                Todavía no hay ninguna reseña para ver
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                <Text style={{ fontSize: 15 }}>
+                  Pulsa{" "}
+                  <Text
+                    style={{ fontSize: 15, color: global.PRIMARY_COLOR }}
+                    onPress={() => navigation.navigate("ReviewCreator")}
+                  >
+                    aquí
+                  </Text>{" "}
+                  para añadir la primera!
+                </Text>
+              </View>
+            </>
+          )}
         </>
       )}
     </View>
@@ -92,6 +100,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "100%",
     width: "100%",
+  },
+  review: {
+    width: "90%",
   },
 });
 
