@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Image, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import global from "../global";
 import badface from "../assets/badface.png";
 import { auth } from "../database/firebase";
@@ -8,18 +16,33 @@ import {
   getReseñasFromUsers,
   findUserByEmail,
   getImg,
+  findBookById,
 } from "../database/firebaseFunctions";
 import ReviewItem from "../components/ReviewItem";
+import { Divider, FAB } from "@rneui/themed";
 
 const HomeScreen = ({ navigation }) => {
   const [items, setItems] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    getData().then(() => {
-      setLoaded(true);
+    const unsubscribe = navigation.addListener("focus", () => {
+      getData().then(() => {
+        setLoaded(true);
+      });
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getData();
+    setRefreshing(false);
+  };
 
   const getData = async () => {
     const user = auth.currentUser;
@@ -37,10 +60,12 @@ const HomeScreen = ({ navigation }) => {
     const promises = reseñas.map(async (reseña) => {
       const userData = await findUserByEmail(reseña.usuario);
       const imgProfile = await getImg("perfil/", userData.usuario);
+      const book = await findBookById(reseña.libro);
       const item = {
         usuario: userData,
         reseña: reseña,
         imagen_usuario: imgProfile,
+        libro: book,
       };
       return item;
     });
@@ -57,8 +82,38 @@ const HomeScreen = ({ navigation }) => {
       ) : (
         <>
           {items.length > 0 ? (
-            <View style={styles.review}>
-              <ReviewItem />
+            <View style={{ flex: 1, position: "relative" }}>
+              <ScrollView
+                style={{ width: "90%", marginTop: 35 }}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={[global.PRIMARY_COLOR]}
+                  />
+                }
+              >
+                {items.map((review, i) => {
+                  return (
+                    <View key={i} style={{ marginBottom: 10 }}>
+                      <ReviewItem
+                        user={review.usuario}
+                        review={review.reseña}
+                        img_user={review.imagen_usuario}
+                        book={review.libro}
+                      />
+                      <Divider width={1} style={{ marginTop: 10 }} />
+                    </View>
+                  );
+                })}
+              </ScrollView>
+              <FAB
+                visible={true}
+                icon={{ name: "add", color: "white" }}
+                color={global.PRIMARY_COLOR}
+                onPress={() => navigation.navigate("ReviewCreator")}
+                style={styles.fab}
+              />
             </View>
           ) : (
             <>
@@ -101,8 +156,11 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  review: {
-    width: "90%",
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
   },
 });
 

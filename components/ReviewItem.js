@@ -5,17 +5,14 @@ import global from "../global";
 import user_default from "../assets/img_user.png";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const ReviewItem = () => {
-  const usuario = "pececito";
-  const img_review =
-    "https://firebasestorage.googleapis.com/v0/b/bookify-1dff3.appspot.com/o/rese%C3%B1as%2Fpez%40gmail.com2023-11-20T12%3A10%3A07.436Z?alt=media&token=908d3c6c-3a5e-423b-b449-74f7a206dd44";
-  const img_user =
-    "https://firebasestorage.googleapis.com/v0/b/bookify-1dff3.appspot.com/o/perfil%2Fpececito?alt=media&token=c13b5c3c-1f45-4735-a697-761b732e8b28";
-  const descripcion =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu tristique odio. Suspendisse potenti. Integer sodales congue massa. Donec facilisis, nisl id semper sollicitudin, enim magna malesuada mauris, nec faucibus purus turpis in libero. Cras cursus consequat risus vel efficitur. Sed at elementum ligula. Interdum et malesuada fames ac ante ipsum primis in faucibus. Praesent sodales erat metus, in condimentum est pretium ac. Donec lacinia turpis et egestas volutpat. Donec laoreet ultricies felis vitae gravida. Fusce id nunc suscipit libero feugiat viverra quis a est. In fringilla ex lectus, non posuere lacus feugiat sed. Nulla facilisi. Maecenas et nisi ultricies.";
-  const titulo = "El gusano de seda";
-  const autor = "Robert Galbraith";
-  const puntuacion = 3;
+const ReviewItem = (props) => {
+  const usuario = props.user.usuario;
+  const img_review = props.review.url_img;
+  const img_user = props.img_user;
+  const descripcion = props.review.descripcion;
+  const titulo = props.book.titulo;
+  const autor = props.book.autor;
+  const puntuacion = props.review.puntuacion;
   const likes = 1;
   const liked = true;
 
@@ -30,12 +27,19 @@ const ReviewItem = () => {
         <Text style={{ fontSize: 17, fontWeight: "bold" }}>@{usuario}</Text>
       </View>
       <View>
-        <View style={{ flexDirection: "row", marginBottom: 17 }}>
+        <View style={{ flexDirection: "row" }}>
           {img_review && (
             <Image source={{ uri: img_review }} style={styles.reviewImg} />
           )}
-          <View style={{ flexDirection: "column" }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 6 }}>
+          <View style={{ flexDirection: "column", width: "100%" }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                marginBottom: 6,
+                width: "70%",
+              }}
+            >
               {titulo}
             </Text>
             <Text style={{ fontSize: 18, marginBottom: 6 }}>{autor}</Text>
@@ -64,9 +68,11 @@ const ReviewItem = () => {
             </View>
           </View>
         </View>
-        <Text style={{ fontSize: 14, textAlign: "justify" }}>
-          {descripcion}
-        </Text>
+        {descripcion && (
+          <Text style={{ fontSize: 14, textAlign: "justify", marginTop: 17 }}>
+            {descripcion}
+          </Text>
+        )}
       </View>
     </View>
   );

@@ -38,7 +38,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
   const [puntuacion, setPuntuacion] = useState(1);
   const [imagen, setImagen] = useState(null);
 
-  const publish = () => {
+  const publish = async () => {
     if (!titulo || !autor) {
       showMessage({
         message: "Error al crear la reseña",
@@ -49,7 +49,8 @@ const ReviewCreatorScreen = ({ navigation }) => {
     }
 
     const user = auth.currentUser;
-    addReview(user.email, titulo, autor, puntuacion, descripcion, imagen);
+    await addReview(user.email, titulo, autor, puntuacion, descripcion, imagen);
+    navigation.goBack();
   };
 
   const pickImage = async () => {

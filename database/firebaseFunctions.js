@@ -13,6 +13,8 @@ import {
   getDocs,
   query,
   addDoc,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 
 // Iniciar sesión
@@ -194,6 +196,21 @@ const findBook = async (titulo, autor) => {
   }
 };
 
+const findBookById = async (id) => {
+  const q = doc(db, "libros", id);
+
+  try {
+    const docSnapshot = await getDoc(q);
+    if (!docSnapshot.empty) {
+      return docSnapshot.data();
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error al buscar el libro:", error);
+  }
+};
+
 // Encontrar seguidos
 const findSeguidos = async (email) => {
   const q = query(collection(db, "seguidos"), where("seguidor", "==", email));
@@ -241,4 +258,5 @@ export {
   getReseñasFromUsers,
   findUserByEmail,
   getImg,
+  findBookById,
 };
