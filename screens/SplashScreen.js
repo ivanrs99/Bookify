@@ -8,9 +8,9 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigation.navigate("HomeStack");
+        navigation.navigate("Home");
       } else {
-        navigation.navigate("LoginStack");
+        navigation.navigate("Login");
       }
     });
   }, [navigation]);

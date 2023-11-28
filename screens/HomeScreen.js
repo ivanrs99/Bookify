@@ -17,6 +17,8 @@ import {
   findUserByEmail,
   getImg,
   findBookById,
+  getTotalLikes,
+  isLiked,
 } from "../database/firebaseFunctions";
 import ReviewItem from "../components/ReviewItem";
 import { Divider, FAB } from "@rneui/themed";
@@ -48,24 +50,28 @@ const HomeScreen = ({ navigation }) => {
     const user = auth.currentUser;
     const userList = await findSeguidos(user.email);
     userList.push(user.email);
-    const reseñas = await getReseñasFromUsers(userList);
+    const reviews = await getReseñasFromUsers(userList);
 
-    if (reseñas.length > 0) {
-      const result = await createItemsList(reseñas);
+    if (reviews.length > 0) {
+      const result = await createItemsList(reviews);
       setItems(result);
     }
   };
 
-  const createItemsList = async (reseñas) => {
-    const promises = reseñas.map(async (reseña) => {
-      const userData = await findUserByEmail(reseña.usuario);
+  const createItemsList = async (reviews) => {
+    const promises = reviews.map(async (review) => {
+      const userData = await findUserByEmail(review.usuario);
       const imgProfile = await getImg("perfil/", userData.usuario);
-      const book = await findBookById(reseña.libro);
+      const book = await findBookById(review.libro);
+      const currentUserLiked = await isLiked(userData.email, review.id);
+      const likes = await getTotalLikes(review.id);
       const item = {
-        usuario: userData,
-        reseña: reseña,
-        imagen_usuario: imgProfile,
-        libro: book,
+        user: userData,
+        review: review,
+        img_user: imgProfile,
+        book: book,
+        totalLikes: likes,
+        liked: currentUserLiked,
       };
       return item;
     });
@@ -93,14 +99,16 @@ const HomeScreen = ({ navigation }) => {
                   />
                 }
               >
-                {items.map((review, i) => {
+                {items.map((item, i) => {
                   return (
                     <View key={i} style={{ marginBottom: 10 }}>
                       <ReviewItem
-                        user={review.usuario}
-                        review={review.reseña}
-                        img_user={review.imagen_usuario}
-                        book={review.libro}
+                        user={item.user}
+                        review={item.review}
+                        img_user={item.img_user}
+                        book={item.book}
+                        totalLikes={item.totalLikes}
+                        liked={item.liked}
                       />
                       <Divider width={1} style={{ marginTop: 10 }} />
                     </View>

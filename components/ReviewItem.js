@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { AirbnbRating } from "@rneui/themed";
 import global from "../global";
 import user_default from "../assets/img_user.png";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { likeReview, removelikeReview } from "../database/firebaseFunctions";
 
 const ReviewItem = (props) => {
+  const [liked, setLiked] = useState(props.liked);
+  const [likes, setLikes] = useState(props.totalLikes);
+
   const usuario = props.user.usuario;
   const img_review = props.review.url_img;
   const img_user = props.img_user;
@@ -13,8 +17,18 @@ const ReviewItem = (props) => {
   const titulo = props.book.titulo;
   const autor = props.book.autor;
   const puntuacion = props.review.puntuacion;
-  const likes = 1;
-  const liked = true;
+
+  const like = () => {
+    likeReview(props.user.email, props.review.id);
+    setLiked(true);
+    setLikes(likes + 1);
+  };
+
+  const unlike = () => {
+    removelikeReview(props.user.email, props.review.id);
+    setLiked(false);
+    setLikes(likes - 1);
+  };
 
   return (
     <View style={{ margin: 10 }}>
@@ -60,9 +74,19 @@ const ReviewItem = (props) => {
               }}
             >
               {liked ? (
-                <Ionicons name="heart" size={25} color="black" />
+                <Ionicons
+                  name="heart"
+                  size={25}
+                  color="black"
+                  onPress={unlike}
+                />
               ) : (
-                <Ionicons name="heart-outline" size={25} color="black" />
+                <Ionicons
+                  name="heart-outline"
+                  size={25}
+                  color="black"
+                  onPress={like}
+                />
               )}
               <Text style={{ marginLeft: 5, fontSize: 18 }}>{likes}</Text>
             </View>

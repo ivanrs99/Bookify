@@ -67,7 +67,7 @@ const RegisterScreen = ({ navigation }) => {
     signUp(email, contraseña, usuario, nombre, apellidos, imagen)
       .then(() => {
         signIn(email, contraseña).then(() => {
-          navigation.navigate("HomeStack");
+          navigation.navigate("Home");
         });
       })
       .catch((error) => {

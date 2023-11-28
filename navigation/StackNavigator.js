@@ -23,8 +23,8 @@ const InitialStackNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="Splash" screenOptions={screenOptions}>
       <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="LoginStack" component={LoginStackNavigator} />
-      <Stack.Screen name="HomeStack" component={TabNavigator} />
+      <Stack.Screen name="Login" component={LoginStackNavigator} />
+      <Stack.Screen name="Home" component={TabNavigator} />
     </Stack.Navigator>
   );
 };

@@ -34,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
     signIn(email, contraseña)
       .then(() => {
         clearData();
-        navigation.navigate("HomeStack");
+        navigation.navigate("Home");
       })
       .catch((error) => {
         showLogInError(error);

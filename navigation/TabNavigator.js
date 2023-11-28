@@ -12,11 +12,11 @@ const TabNavigator = () => {
   const tabScreenOptions = ({ route }) => ({
     tabBarIcon: ({ focused, color, size }) => {
       let iconName;
-      if (route.name === "HomeStack") {
+      if (route.name === "HomeTab") {
         iconName = focused ? "home" : "home-outline";
-      } else if (route.name === "SearchStack") {
+      } else if (route.name === "SearchTab") {
         iconName = focused ? "search" : "search-outline";
-      } else if (route.name === "ProfileStack") {
+      } else if (route.name === "ProfileTab") {
         iconName = focused ? "person-circle" : "person-circle-outline";
       }
       return <Ionicons name={iconName} size={size} color={color} />;
@@ -35,9 +35,9 @@ const TabNavigator = () => {
 
   return (
     <Tab.Navigator screenOptions={tabScreenOptions}>
-      <Tab.Screen name="HomeStack" component={HomeStackNavigator} />
-      <Tab.Screen name="SearchStack" component={SearchStackNavigator} />
-      <Tab.Screen name="ProfileStack" component={ProfileScreen} />
+      <Tab.Screen name="HomeTab" component={HomeStackNavigator} />
+      <Tab.Screen name="SearchTab" component={SearchStackNavigator} />
+      <Tab.Screen name="ProfileTab" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

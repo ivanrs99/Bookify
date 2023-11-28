@@ -15,6 +15,7 @@ import {
   addDoc,
   getDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 
 // Iniciar sesión
@@ -171,7 +172,7 @@ const createBook = async (titulo, autor) => {
       autor: autor,
     });
   } catch (error) {
-    Console.log(error);
+    console.log(error);
   }
 };
 
@@ -237,7 +238,9 @@ const getReseñasFromUsers = async (users) => {
     const queryResult = await getDocs(q);
 
     queryResult.forEach((doc) => {
-      reseñas.push(doc.data());
+      const reviewId = doc.id;
+      const reviewData = doc.data();
+      reseñas.push({ id: reviewId, ...reviewData });
     });
   }
 
@@ -246,6 +249,62 @@ const getReseñasFromUsers = async (users) => {
   );
 
   return reseñasOrdenadas;
+};
+
+// Añadir like
+const likeReview = async (user_email, review_id) => {
+  try {
+    const likesRef = collection(db, "likes");
+    await addDoc(likesRef, {
+      user: user_email,
+      review: review_id,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Borrar like
+const removelikeReview = async (user_email, review_id) => {
+  try {
+    const q = query(
+      collection(db, "likes"),
+      where("user", "==", user_email),
+      where("review", "==", review_id),
+      limit(1)
+    );
+
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const likeDoc = querySnapshot.docs[0];
+      await deleteDoc(likeDoc.ref);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Obtener likes totales
+const getTotalLikes = async (review_id) => {
+  const totalLikesQuery = query(
+    collection(db, "likes"),
+    where("review", "==", review_id)
+  );
+
+  const totalLikesSnapshot = await getDocs(totalLikesQuery);
+  return totalLikesSnapshot.size;
+};
+
+// Para saber si el usuario le ha dado like
+const isLiked = async (user_email, review_id) => {
+  const q = query(
+    collection(db, "likes"),
+    where("user", "==", user_email),
+    where("review", "==", review_id)
+  );
+
+  const result = await getDocs(q);
+  return !result.empty;
 };
 
 export {
@@ -259,4 +318,8 @@ export {
   findUserByEmail,
   getImg,
   findBookById,
+  likeReview,
+  removelikeReview,
+  getTotalLikes,
+  isLiked,
 };
