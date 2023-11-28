@@ -5,6 +5,7 @@ import global from "../global";
 import user_default from "../assets/img_user.png";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { likeReview, removelikeReview } from "../database/firebaseFunctions";
+import { auth } from "../database/firebase";
 
 const ReviewItem = (props) => {
   const [liked, setLiked] = useState(props.liked);
@@ -17,15 +18,16 @@ const ReviewItem = (props) => {
   const titulo = props.book.titulo;
   const autor = props.book.autor;
   const puntuacion = props.review.puntuacion;
+  const currentUser = auth.currentUser;
 
   const like = () => {
-    likeReview(props.user.email, props.review.id);
+    likeReview(currentUser.email, props.review.id);
     setLiked(true);
     setLikes(likes + 1);
   };
 
   const unlike = () => {
-    removelikeReview(props.user.email, props.review.id);
+    removelikeReview(currentUser.email, props.review.id);
     setLiked(false);
     setLikes(likes - 1);
   };

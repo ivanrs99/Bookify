@@ -225,7 +225,7 @@ const findSeguidos = async (email) => {
   if (queryResult.size > 0) {
     return seguidos;
   } else {
-    return null;
+    return [];
   }
 };
 

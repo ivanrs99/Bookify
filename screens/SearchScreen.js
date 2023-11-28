@@ -6,7 +6,10 @@ import { signOutUser } from "../database/firebaseFunctions";
 const SearchScreen = ({ navigation }) => {
   const logOut = () => {
     signOutUser();
-    navigation.goBack();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
   };
 
   return (

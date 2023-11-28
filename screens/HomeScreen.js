@@ -59,11 +59,12 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const createItemsList = async (reviews) => {
+    const currentUser = auth.currentUser;
     const promises = reviews.map(async (review) => {
       const userData = await findUserByEmail(review.usuario);
       const imgProfile = await getImg("perfil/", userData.usuario);
       const book = await findBookById(review.libro);
-      const currentUserLiked = await isLiked(userData.email, review.id);
+      const currentUserLiked = await isLiked(currentUser.email, review.id);
       const likes = await getTotalLikes(review.id);
       const item = {
         user: userData,

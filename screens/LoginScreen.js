@@ -7,11 +7,11 @@ import { showMessage } from "react-native-flash-message";
 import { signIn, findUser } from "../database/firebaseFunctions";
 
 const LoginScreen = ({ navigation }) => {
-  const [usuario, setUsuario] = useState("");
-  const [contraseña, setContraseña] = useState("");
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
 
   const login = async () => {
-    if (!usuario || !contraseña) {
+    if (!user || !password) {
       showMessage({
         message: "Error de inicio de sesión",
         description: "Debes indicar el usuario y la contraseña.",
@@ -20,8 +20,8 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    const user = await findUser(usuario);
-    if (user == null) {
+    const userFound = await findUser(user);
+    if (userFound == null) {
       showMessage({
         message: "Error de inicio de sesión",
         description: "Usuario no encontrado.",
@@ -30,8 +30,8 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    const email = user.email;
-    signIn(email, contraseña)
+    const email = userFound.email;
+    signIn(email, password)
       .then(() => {
         clearData();
         navigation.navigate("Home");
@@ -42,8 +42,8 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const clearData = () => {
-    setUsuario("");
-    setContraseña("");
+    setUser("");
+    setPassword("");
   };
 
   const showLogInError = (error) => {
@@ -78,16 +78,16 @@ const LoginScreen = ({ navigation }) => {
           label="Usuario"
           labelStyle={{ color: "black", fontWeight: "normal" }}
           placeholder="Usuario"
-          value={usuario}
-          onChangeText={(value) => setUsuario(value)}
+          value={user}
+          onChangeText={(value) => setUser(value)}
         />
         <Input
           label="Contraseña"
           labelStyle={{ color: "black", fontWeight: "normal", marginTop: 10 }}
           placeholder="Contraseña"
           secureTextEntry={true}
-          value={contraseña}
-          onChangeText={(value) => setContraseña(value)}
+          value={password}
+          onChangeText={(value) => setPassword(value)}
         />
         <Button
           title="INICIAR SESIÓN"
