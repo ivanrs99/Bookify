@@ -251,6 +251,26 @@ const getReseñasFromUsers = async (users) => {
   return reseñasOrdenadas;
 };
 
+// Encontrar reseñas de un usuario
+const getReseñasFromUser = async (user) => {
+  const reseñas = [];
+
+  const q = query(collection(db, "reseñas"), where("usuario", "==", user));
+  const queryResult = await getDocs(q);
+
+  queryResult.forEach((doc) => {
+    const reviewId = doc.id;
+    const reviewData = doc.data();
+    reseñas.push({ id: reviewId, ...reviewData });
+  });
+
+  const reseñasOrdenadas = reseñas.sort(
+    (a, b) => new Date(b.fecha) - new Date(a.fecha)
+  );
+
+  return reseñasOrdenadas;
+};
+
 // Añadir like
 const likeReview = async (user_email, review_id) => {
   try {
@@ -315,6 +335,7 @@ export {
   addReview,
   findSeguidos,
   getReseñasFromUsers,
+  getReseñasFromUser,
   findUserByEmail,
   getImg,
   findBookById,

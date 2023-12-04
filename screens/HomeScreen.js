@@ -27,6 +27,7 @@ const HomeScreen = ({ navigation }) => {
   const [items, setItems] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -43,6 +44,7 @@ const HomeScreen = ({ navigation }) => {
   const onRefresh = async () => {
     setRefreshing(true);
     await getData();
+    setRefreshKey((prevKey) => prevKey + 1);
     setRefreshing(false);
   };
 
@@ -56,6 +58,7 @@ const HomeScreen = ({ navigation }) => {
       const result = await createItemsList(reviews);
       setItems(result);
     }
+    setRefreshKey((prevKey) => prevKey + 1);
   };
 
   const createItemsList = async (reviews) => {
@@ -91,6 +94,7 @@ const HomeScreen = ({ navigation }) => {
           {items.length > 0 ? (
             <View style={{ flex: 1, position: "relative" }}>
               <ScrollView
+                key={refreshKey}
                 style={{ width: "90%", marginTop: 35 }}
                 refreshControl={
                   <RefreshControl
