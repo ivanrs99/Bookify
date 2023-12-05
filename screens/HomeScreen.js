@@ -20,7 +20,8 @@ import {
   getTotalLikes,
   isLiked,
 } from "../database/firebaseFunctions";
-import ReviewItem from "../components/ReviewItem";
+import ReviewHeader from "../components/ReviewHeader";
+import ReviewBody from "../components/ReviewBody";
 import { Divider, FAB } from "@rneui/themed";
 
 const HomeScreen = ({ navigation }) => {
@@ -92,10 +93,10 @@ const HomeScreen = ({ navigation }) => {
       ) : (
         <>
           {items.length > 0 ? (
-            <View style={{ flex: 1, position: "relative" }}>
+            <View style={{ width: "100%", alignItems: "center" }}>
               <ScrollView
                 key={refreshKey}
-                style={{ width: "90%", marginTop: 35 }}
+                style={{ width: "95%", marginTop: 35 }}
                 refreshControl={
                   <RefreshControl
                     refreshing={refreshing}
@@ -106,16 +107,15 @@ const HomeScreen = ({ navigation }) => {
               >
                 {items.map((item, i) => {
                   return (
-                    <View key={i} style={{ marginBottom: 10 }}>
-                      <ReviewItem
-                        user={item.user}
+                    <View key={i} style={{ margin: 10 }}>
+                      <ReviewHeader user={item.user} img_user={item.img_user} />
+                      <ReviewBody
                         review={item.review}
-                        img_user={item.img_user}
                         book={item.book}
                         totalLikes={item.totalLikes}
                         liked={item.liked}
                       />
-                      <Divider width={1} style={{ marginTop: 10 }} />
+                      <Divider width={1} style={{ marginTop: 15 }} />
                     </View>
                   );
                 })}

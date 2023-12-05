@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { AirbnbRating } from "@rneui/themed";
 import global from "../global";
-import user_default from "../assets/img_user.png";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { likeReview, removelikeReview } from "../database/firebaseFunctions";
 import { auth } from "../database/firebase";
