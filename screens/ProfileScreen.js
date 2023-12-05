@@ -19,6 +19,8 @@ import {
   findBookById,
   getTotalLikes,
   isLiked,
+  findSeguidores,
+  findSeguidos,
 } from "../database/firebaseFunctions";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ReviewBody from "../components/ReviewBody";
@@ -31,6 +33,8 @@ const ProfileScreen = () => {
   const [userData, setUserData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [seguidores, setSeguidores] = useState(0);
+  const [seguidos, setSeguidos] = useState(0);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -50,6 +54,10 @@ const ProfileScreen = () => {
     const reviews = await getReseñasFromUser(user.email);
     const userData = await findUserByEmail(user.email);
     const imgProfile = await getImg("perfil/", userData.usuario);
+    findSeguidores(user.email).then((seguidores) =>
+      setSeguidores(seguidores.length)
+    );
+    findSeguidos(user.email).then((seguidos) => setSeguidos(seguidos.length));
     setUserData(userData);
     setImgUser(imgProfile);
 
@@ -107,10 +115,39 @@ const ProfileScreen = () => {
                 <Image source={profilePic} style={styles.profileImg} />
               )}
             </View>
+            <View
+              style={{
+                marginTop: 65,
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                {userData.nombre} {userData.apellidos}
+              </Text>
+              <Text style={{ fontSize: 15, fontWeight: "300" }}>
+                {userData.email}
+              </Text>
+            </View>
+            <View style={styles.statsContainer}>
+              <View style={styles.statsGroup}>
+                <Text style={styles.statsValue}>{items.length}</Text>
+                <Text style={styles.statsName}>Reseñas</Text>
+              </View>
+              <View style={styles.statsGroup}>
+                <Text style={styles.statsValue}>{seguidores}</Text>
+                <Text style={styles.statsName}>Seguidores</Text>
+              </View>
+              <View style={styles.statsGroup}>
+                <Text style={styles.statsValue}>{seguidos}</Text>
+                <Text style={styles.statsName}>Siguiendo</Text>
+              </View>
+            </View>
+            <Divider width={2} color="black" style={{ marginHorizontal: 10 }} />
             <View style={styles.reviewsContainer}>
               {items.map((item, i) => {
                 return (
-                  <View key={i} style={{ marginBottom: 10 }}>
+                  <View key={i} style={{ margin: 10 }}>
                     <ReviewBody
                       review={item.review}
                       book={item.book}
@@ -174,9 +211,28 @@ const styles = StyleSheet.create({
     width: 110,
   },
   reviewsContainer: {
-    marginTop: 60,
     width: "100%",
     padding: 10,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    marginHorizontal: 40,
+    marginBottom: 20,
+  },
+  statsGroup: {
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  statsValue: {
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+  statsName: {
+    fontWeight: "200",
+    fontSize: 16,
+    letterSpacing: 2,
   },
 });
 

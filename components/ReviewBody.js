@@ -31,7 +31,7 @@ const ReviewBody = (props) => {
   };
 
   return (
-    <View style={{ margin: 10 }}>
+    <View>
       <View style={{ flexDirection: "row" }}>
         {img_review && (
           <Image source={{ uri: img_review }} style={styles.reviewImg} />

@@ -23,6 +23,17 @@ const signIn = async (email, contraseña) => {
   return signInWithEmailAndPassword(auth, email, contraseña);
 };
 
+// Cerrar sesión
+const signOutUser = () => {
+  signOut(auth)
+    .then(() => {
+      console.log("Sesión cerrada.");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 // Registrar usuario
 const signUp = async (
   email,
@@ -108,17 +119,6 @@ const getImg = async (ruta, nombre) => {
   } catch (error) {
     return null;
   }
-};
-
-// Cerrar sesión
-const signOutUser = () => {
-  signOut(auth)
-    .then(() => {
-      console.log("Sesión cerrada.");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
 };
 
 // Publicar reseña
@@ -224,6 +224,23 @@ const findSeguidos = async (email) => {
 
   if (queryResult.size > 0) {
     return seguidos;
+  } else {
+    return [];
+  }
+};
+
+// Encontrar seguidores
+const findSeguidores = async (email) => {
+  const q = query(collection(db, "seguidos"), where("seguido", "==", email));
+  const queryResult = await getDocs(q);
+  const seguidores = [];
+
+  queryResult.forEach((doc) => {
+    seguidores.push(doc.data().seguidor);
+  });
+
+  if (queryResult.size > 0) {
+    return seguidores;
   } else {
     return [];
   }
@@ -343,4 +360,5 @@ export {
   removelikeReview,
   getTotalLikes,
   isLiked,
+  findSeguidores,
 };
