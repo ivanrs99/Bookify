@@ -7,15 +7,21 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 import { showMessage } from "react-native-flash-message";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { findUser, signUp, signIn } from "../database/firebaseFunctions";
+import {
+  findUser,
+  signUp,
+  signIn,
+  editUserData,
+} from "../database/firebaseFunctions";
 
-const RegisterScreen = ({ navigation }) => {
-  const [nombre, setNombre] = useState("");
-  const [apellidos, setApellidos] = useState("");
-  const [usuario, setUsuario] = useState("");
+const RegisterScreen = ({ navigation, route }) => {
+  const [nombre, setNombre] = useState(route.params.name);
+  const [apellidos, setApellidos] = useState(route.params.surname);
+  const [usuario, setUsuario] = useState(route.params.user);
   const [email, setEmail] = useState("");
   const [contraseña, setContraseña] = useState("");
-  const [imagen, setImagen] = useState(null);
+  const [imagen, setImagen] = useState(route.params.img);
+  const { editMode } = route.params;
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -97,6 +103,20 @@ const RegisterScreen = ({ navigation }) => {
     }
   };
 
+  const save = async () => {
+    if (!nombre || !apellidos) {
+      showMessage({
+        message: "Error",
+        description: "Todos los campos son obligatorios, excepto la imagen.",
+        type: "danger",
+      });
+      return;
+    }
+
+    await editUserData(nombre, apellidos, usuario, imagen);
+    navigation.goBack();
+  };
+
   return (
     <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.container}>
@@ -104,7 +124,9 @@ const RegisterScreen = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back-circle" size={40} color="white" />
           </TouchableOpacity>
-          <Text style={styles.text}>Crear cuenta</Text>
+          <Text style={styles.text}>
+            {editMode ? "Editar cuenta" : "Crear cuenta"}
+          </Text>
         </View>
         <View style={styles.formContainer}>
           {imagen ? (
@@ -123,35 +145,41 @@ const RegisterScreen = ({ navigation }) => {
           <Input
             placeholder="Nombre"
             containerStyle={{ marginBottom: 10 }}
+            value={nombre}
             onChangeText={(value) => setNombre(value)}
           />
           <Input
             placeholder="Apellidos"
             containerStyle={{ marginBottom: 10 }}
+            value={apellidos}
             onChangeText={(value) => setApellidos(value)}
           />
-          <Input
-            placeholder="Usuario"
-            containerStyle={{ marginBottom: 10 }}
-            onChangeText={(value) => setUsuario(value)}
-          />
-          <Input
-            placeholder="Email"
-            containerStyle={{ marginBottom: 10 }}
-            onChangeText={(value) => setEmail(value)}
-          />
-          <Input
-            placeholder="Contraseña"
-            containerStyle={{ marginBottom: 10 }}
-            onChangeText={(value) => setContraseña(value)}
-            secureTextEntry={true}
-          />
+          {!editMode && (
+            <>
+              <Input
+                placeholder="Usuario"
+                containerStyle={{ marginBottom: 10 }}
+                onChangeText={(value) => setUsuario(value)}
+              />
+              <Input
+                placeholder="Email"
+                containerStyle={{ marginBottom: 10 }}
+                onChangeText={(value) => setEmail(value)}
+              />
+              <Input
+                placeholder="Contraseña"
+                containerStyle={{ marginBottom: 10 }}
+                onChangeText={(value) => setContraseña(value)}
+                secureTextEntry={true}
+              />
+            </>
+          )}
           <Button
-            title="REGISTRARSE"
+            title={editMode ? "GUARDAR" : "REGISTRARSE"}
             buttonStyle={styles.button}
             titleStyle={{ fontWeight: "bold", fontSize: 20 }}
             containerStyle={{ width: "65%" }}
-            onPress={register}
+            onPress={editMode ? save : register}
           />
         </View>
       </View>

@@ -25,6 +25,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ReviewBody from "../components/ReviewBody";
 import { Divider, BottomSheet, ListItem } from "@rneui/themed";
+import defaultImg from "../assets/img_user.png";
 
 const ProfileScreen = ({ navigation }) => {
   const [items, setItems] = useState([]);
@@ -88,6 +89,13 @@ const ProfileScreen = ({ navigation }) => {
 
   const edit = () => {
     setIsVisible(false);
+    navigation.navigate("Edit", {
+      editMode: true,
+      img: imgUser,
+      name: userData.nombre,
+      surname: userData.apellidos,
+      user: userData.usuario,
+    });
   };
 
   const logOut = () => {
@@ -155,7 +163,7 @@ const ProfileScreen = ({ navigation }) => {
               {imgUser ? (
                 <Image source={{ uri: imgUser }} style={styles.profileImg} />
               ) : (
-                <Image source={profilePic} style={styles.profileImg} />
+                <Image source={defaultImg} style={styles.profileImg} />
               )}
             </View>
             <View

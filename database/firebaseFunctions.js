@@ -16,6 +16,7 @@ import {
   getDoc,
   doc,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 // Iniciar sesión
@@ -58,6 +59,26 @@ const signUp = async (
     description: "Usuario registrado con éxito.",
     type: "success",
   });
+};
+
+// Editar datos de usuario
+const editUserData = async (name, surname, user, img) => {
+  if (img) uploadImg(img, user, "perfil/");
+  const q = query(collection(db, "usuarios"), where("usuario", "==", user));
+
+  try {
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0].ref;
+
+      await updateDoc(userDoc, {
+        nombre: name,
+        apellidos: surname,
+      });
+    }
+  } catch (error) {
+    console.error("Error al buscar el usuario:", error);
+  }
 };
 
 // Buscar un usuario por nombre de usuario
@@ -361,4 +382,5 @@ export {
   getTotalLikes,
   isLiked,
   findSeguidores,
+  editUserData,
 };

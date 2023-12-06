@@ -60,6 +60,7 @@ const ProfileStackNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="Profile" screenOptions={screenOptions}>
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Edit" component={RegisterScreen} />
     </Stack.Navigator>
   );
 };

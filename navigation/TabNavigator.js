@@ -1,7 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { HomeStackNavigator, SearchStackNavigator } from "./StackNavigator";
-import ProfileScreen from "../screens/ProfileScreen";
+import {
+  HomeStackNavigator,
+  SearchStackNavigator,
+  ProfileStackNavigator,
+} from "./StackNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import global from "../global";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
@@ -37,7 +40,7 @@ const TabNavigator = () => {
     <Tab.Navigator screenOptions={tabScreenOptions}>
       <Tab.Screen name="HomeTab" component={HomeStackNavigator} />
       <Tab.Screen name="SearchTab" component={SearchStackNavigator} />
-      <Tab.Screen name="ProfileTab" component={ProfileScreen} />
+      <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} />
     </Tab.Navigator>
   );
 };
