@@ -4,7 +4,6 @@ import {
   View,
   Text,
   ActivityIndicator,
-  TouchableHighlight,
   ScrollView,
   Image,
   RefreshControl,
@@ -21,12 +20,13 @@ import {
   isLiked,
   findSeguidores,
   findSeguidos,
+  signOutUser,
 } from "../database/firebaseFunctions";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ReviewBody from "../components/ReviewBody";
-import { Divider } from "@rneui/themed";
+import { Divider, BottomSheet, ListItem } from "@rneui/themed";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const [items, setItems] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [imgUser, setImgUser] = useState(null);
@@ -35,6 +35,7 @@ const ProfileScreen = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [seguidores, setSeguidores] = useState(0);
   const [seguidos, setSeguidos] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -85,17 +86,59 @@ const ProfileScreen = () => {
     return items;
   };
 
+  const edit = () => {
+    setIsVisible(false);
+  };
+
+  const logOut = () => {
+    setIsVisible(false);
+    signOutUser();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  };
+
+  const menuItems = [
+    { title: "Editar perfil", onPress: edit },
+    { title: "Cerrar sesión", onPress: logOut },
+    {
+      title: "Cancelar",
+      containerStyle: { backgroundColor: "gray" },
+      titleStyle: { color: "white" },
+      onPress: () => setIsVisible(false),
+    },
+  ];
+
   return (
     <View style={styles.container}>
       {!isLoaded ? (
         <ActivityIndicator size={100} color={global.PRIMARY_COLOR} />
       ) : (
         <View style={styles.profileContainer}>
+          <BottomSheet modalProps={{}} isVisible={isVisible}>
+            {menuItems.map((l, i) => (
+              <ListItem
+                key={i}
+                containerStyle={l.containerStyle}
+                onPress={l.onPress}
+              >
+                <ListItem.Content>
+                  <ListItem.Title style={l.titleStyle}>
+                    {l.title}
+                  </ListItem.Title>
+                </ListItem.Content>
+              </ListItem>
+            ))}
+          </BottomSheet>
           <View style={styles.menu_user}>
             <Text style={styles.user}>@{userData.usuario}</Text>
-            <TouchableHighlight onPress={() => console.log("menu")}>
-              <Ionicons name="menu-outline" color="white" size={30} />
-            </TouchableHighlight>
+            <Ionicons
+              name="menu-outline"
+              color="white"
+              size={30}
+              onPress={() => setIsVisible(true)}
+            />
           </View>
           <ScrollView
             key={refreshKey}
