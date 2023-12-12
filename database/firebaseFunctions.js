@@ -184,6 +184,26 @@ const addReview = async (
   }
 };
 
+// Borrar review
+const deleteReview = async (id) => {
+  try {
+    const reviewDoc = doc(db, "reseñas", id);
+    await deleteDoc(reviewDoc);
+
+    const likesQuery = query(
+      collection(db, "likes"),
+      where("review", "==", id)
+    );
+    const likesList = await getDocs(likesQuery);
+
+    for (const like of likesList.docs) {
+      await deleteDoc(like.ref);
+    }
+  } catch (error) {
+    console.error("Error al eliminar la reseña:", error);
+  }
+};
+
 // Crear libro
 const createBook = async (titulo, autor) => {
   try {
@@ -383,4 +403,5 @@ export {
   isLiked,
   findSeguidores,
   editUserData,
+  deleteReview,
 };

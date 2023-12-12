@@ -15,12 +15,12 @@ import {
 } from "../database/firebaseFunctions";
 
 const RegisterScreen = ({ navigation, route }) => {
-  const [nombre, setNombre] = useState(route.params.name);
-  const [apellidos, setApellidos] = useState(route.params.surname);
-  const [usuario, setUsuario] = useState(route.params.user);
+  const [name, setName] = useState(route.params.name);
+  const [surname, setSurname] = useState(route.params.surname);
+  const [user, setUser] = useState(route.params.user);
   const [email, setEmail] = useState("");
-  const [contraseña, setContraseña] = useState("");
-  const [imagen, setImagen] = useState(route.params.img);
+  const [password, setPassword] = useState("");
+  const [image, setImage] = useState(route.params.img);
   const { editMode } = route.params;
 
   const pickImage = async () => {
@@ -36,13 +36,13 @@ const RegisterScreen = ({ navigation, route }) => {
       });
 
       if (!result.canceled) {
-        setImagen(result.assets[0].uri);
+        setImage(result.assets[0].uri);
       }
     }
   };
 
   const register = async () => {
-    if (!nombre || !apellidos || !usuario || !email || !contraseña) {
+    if (!name || !surname || !user || !email || !password) {
       showMessage({
         message: "Error de registro",
         description: "Todos los campos son obligatorios, excepto la imagen.",
@@ -51,8 +51,8 @@ const RegisterScreen = ({ navigation, route }) => {
       return;
     }
 
-    const user = await findUser(usuario);
-    if (user != null) {
+    const userFound = await findUser(user);
+    if (userFound != null) {
       showMessage({
         message: "Error de registro",
         description: "Ya existe un usuario con ese nombre de usuario.",
@@ -61,7 +61,7 @@ const RegisterScreen = ({ navigation, route }) => {
       return;
     }
 
-    if (contraseña.length < 8) {
+    if (password.length < 8) {
       showMessage({
         message: "Error de registro",
         description: "La contraseña debe tener como mínimo 8 caracteres.",
@@ -70,9 +70,9 @@ const RegisterScreen = ({ navigation, route }) => {
       return;
     }
 
-    signUp(email, contraseña, usuario, nombre, apellidos, imagen)
+    signUp(email, password, user, name, surname, image)
       .then(() => {
-        signIn(email, contraseña).then(() => {
+        signIn(email, password).then(() => {
           navigation.navigate("Home");
         });
       })
@@ -104,7 +104,7 @@ const RegisterScreen = ({ navigation, route }) => {
   };
 
   const save = async () => {
-    if (!nombre || !apellidos) {
+    if (!name || !surname) {
       showMessage({
         message: "Error",
         description: "Todos los campos son obligatorios, excepto la imagen.",
@@ -113,7 +113,7 @@ const RegisterScreen = ({ navigation, route }) => {
       return;
     }
 
-    await editUserData(nombre, apellidos, usuario, imagen);
+    await editUserData(name, surname, user, image);
     navigation.goBack();
   };
 
@@ -129,10 +129,10 @@ const RegisterScreen = ({ navigation, route }) => {
           </Text>
         </View>
         <View style={styles.formContainer}>
-          {imagen ? (
+          {image ? (
             <TouchableOpacity onPress={pickImage}>
               <Image
-                source={{ uri: imagen }}
+                source={{ uri: image }}
                 style={styles.profileImg}
                 onPress={pickImage}
               />
@@ -145,21 +145,21 @@ const RegisterScreen = ({ navigation, route }) => {
           <Input
             placeholder="Nombre"
             containerStyle={{ marginBottom: 10 }}
-            value={nombre}
-            onChangeText={(value) => setNombre(value)}
+            value={name}
+            onChangeText={(value) => setName(value)}
           />
           <Input
             placeholder="Apellidos"
             containerStyle={{ marginBottom: 10 }}
-            value={apellidos}
-            onChangeText={(value) => setApellidos(value)}
+            value={surname}
+            onChangeText={(value) => setSurname(value)}
           />
           {!editMode && (
             <>
               <Input
                 placeholder="Usuario"
                 containerStyle={{ marginBottom: 10 }}
-                onChangeText={(value) => setUsuario(value)}
+                onChangeText={(value) => setUser(value)}
               />
               <Input
                 placeholder="Email"
@@ -169,7 +169,7 @@ const RegisterScreen = ({ navigation, route }) => {
               <Input
                 placeholder="Contraseña"
                 containerStyle={{ marginBottom: 10 }}
-                onChangeText={(value) => setContraseña(value)}
+                onChangeText={(value) => setPassword(value)}
                 secureTextEntry={true}
               />
             </>

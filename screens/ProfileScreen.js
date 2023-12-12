@@ -21,6 +21,7 @@ import {
   findSeguidores,
   findSeguidos,
   signOutUser,
+  deleteReview,
 } from "../database/firebaseFunctions";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ReviewBody from "../components/ReviewBody";
@@ -34,8 +35,8 @@ const ProfileScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [seguidores, setSeguidores] = useState(0);
-  const [seguidos, setSeguidos] = useState(0);
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const user = auth.currentUser;
 
@@ -56,10 +57,12 @@ const ProfileScreen = ({ navigation }) => {
     const reviews = await getReseñasFromUser(user.email);
     const userData = await findUserByEmail(user.email);
     const imgProfile = await getImg("perfil/", userData.usuario);
-    findSeguidores(user.email).then((seguidores) =>
-      setSeguidores(seguidores.length)
+    findSeguidores(user.email).then((followers) =>
+      setFollowers(followers.length)
     );
-    findSeguidos(user.email).then((seguidos) => setSeguidos(seguidos.length));
+    findSeguidos(user.email).then((following) =>
+      setFollowing(following.length)
+    );
     setUserData(userData);
     setImgUser(imgProfile);
 
@@ -118,6 +121,13 @@ const ProfileScreen = ({ navigation }) => {
     },
   ];
 
+  const deleteReviewItem = (id) => {
+    deleteReview(id);
+
+    const updatedReviews = items.filter((item) => item.review.id !== id);
+    setItems(updatedReviews);
+  };
+
   return (
     <View style={styles.container}>
       {!isLoaded ? (
@@ -125,15 +135,15 @@ const ProfileScreen = ({ navigation }) => {
       ) : (
         <View style={styles.profileContainer}>
           <BottomSheet modalProps={{}} isVisible={isVisible}>
-            {menuItems.map((l, i) => (
+            {menuItems.map((item, i) => (
               <ListItem
                 key={i}
-                containerStyle={l.containerStyle}
-                onPress={l.onPress}
+                containerStyle={item.containerStyle}
+                onPress={item.onPress}
               >
                 <ListItem.Content>
-                  <ListItem.Title style={l.titleStyle}>
-                    {l.title}
+                  <ListItem.Title style={item.titleStyle}>
+                    {item.title}
                   </ListItem.Title>
                 </ListItem.Content>
               </ListItem>
@@ -186,11 +196,11 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.statsName}>Reseñas</Text>
               </View>
               <View style={styles.statsGroup}>
-                <Text style={styles.statsValue}>{seguidores}</Text>
+                <Text style={styles.statsValue}>{followers}</Text>
                 <Text style={styles.statsName}>Seguidores</Text>
               </View>
               <View style={styles.statsGroup}>
-                <Text style={styles.statsValue}>{seguidos}</Text>
+                <Text style={styles.statsValue}>{following}</Text>
                 <Text style={styles.statsName}>Siguiendo</Text>
               </View>
             </View>
@@ -204,6 +214,7 @@ const ProfileScreen = ({ navigation }) => {
                       book={item.book}
                       totalLikes={item.totalLikes}
                       liked={item.liked}
+                      onDelete={() => deleteReviewItem(item.review.id)}
                     />
                     <Divider width={1} style={{ marginTop: 10 }} />
                   </View>

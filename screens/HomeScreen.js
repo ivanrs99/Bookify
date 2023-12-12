@@ -19,6 +19,7 @@ import {
   findBookById,
   getTotalLikes,
   isLiked,
+  deleteReview,
 } from "../database/firebaseFunctions";
 import ReviewHeader from "../components/ReviewHeader";
 import ReviewBody from "../components/ReviewBody";
@@ -86,6 +87,13 @@ const HomeScreen = ({ navigation }) => {
     return items;
   };
 
+  const deleteReviewItem = (id) => {
+    deleteReview(id);
+
+    const updatedReviews = items.filter((item) => item.review.id !== id);
+    setItems(updatedReviews);
+  };
+
   return (
     <View style={styles.container}>
       {!isLoaded ? (
@@ -114,6 +122,7 @@ const HomeScreen = ({ navigation }) => {
                         book={item.book}
                         totalLikes={item.totalLikes}
                         liked={item.liked}
+                        onDelete={() => deleteReviewItem(item.review.id)}
                       />
                       <Divider width={1} style={{ marginTop: 15 }} />
                     </View>

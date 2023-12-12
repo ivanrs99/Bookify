@@ -10,6 +10,7 @@ const ReviewBody = (props) => {
   const [liked, setLiked] = useState(props.liked);
   const [likes, setLikes] = useState(props.totalLikes);
 
+  const { onDelete } = props;
   const img_review = props.review.url_img;
   const descripcion = props.review.descripcion;
   const titulo = props.book.titulo;
@@ -74,6 +75,15 @@ const ReviewBody = (props) => {
               />
             )}
             <Text style={{ marginLeft: 5, fontSize: 18 }}>{likes}</Text>
+            {currentUser.email == props.review.usuario && (
+              <Ionicons
+                name="trash-outline"
+                size={24}
+                color="black"
+                onPress={onDelete}
+                style={{ marginLeft: 10 }}
+              />
+            )}
           </View>
         </View>
       </View>
