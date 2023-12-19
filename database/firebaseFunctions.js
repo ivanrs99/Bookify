@@ -123,6 +123,28 @@ const findUserByEmail = async (email) => {
   }
 };
 
+// Buscar usuarios donde el nombre de usuario contenga el parámetro
+const findUserByParamContaining = async (param) => {
+  try {
+    const users = [];
+    const q = query(
+      collection(db, "usuarios"),
+      where("usuario", ">=", param),
+      limit(10)
+    );
+
+    const result = await getDocs(q);
+    result.forEach((doc) => {
+      users.push(doc.data());
+    });
+
+    return users;
+  } catch (error) {
+    console.error("Error al buscar usuarios:", error);
+    return [];
+  }
+};
+
 // Subir imagen
 const uploadImg = async (imagen, nombre, ruta) => {
   const response = await fetch(imagen);
@@ -404,4 +426,5 @@ export {
   findSeguidores,
   editUserData,
   deleteReview,
+  findUserByParamContaining,
 };

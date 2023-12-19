@@ -32,15 +32,15 @@ const HomeScreen = ({ navigation }) => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      getData().then(() => {
-        setLoaded(true);
-      });
+    //const unsubscribe = navigation.addListener("focus", () => {
+    getData().then(() => {
+      setLoaded(true);
     });
+    //});
 
-    return () => {
+    /*return () => {
       unsubscribe();
-    };
+    };*/
   }, []);
 
   const onRefresh = async () => {

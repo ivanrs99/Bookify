@@ -2,18 +2,25 @@ import React from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import user_default from "../assets/img_user.png";
 
-const ReviewItem = (props) => {
-  const username = props.user.usuario;
-  const img_user = props.img_user;
+const UserItem = (props) => {
+  const user = props.user;
+  const img = props.img;
 
   return (
     <View style={styles.header}>
-      {img_user ? (
-        <Image source={{ uri: img_user }} style={styles.profileImg} />
+      {img ? (
+        <Image source={{ uri: img }} style={styles.profileImg} />
       ) : (
         <Image source={user_default} style={styles.profileImg} />
       )}
-      <Text style={{ fontSize: 17, fontWeight: "bold" }}>@{username}</Text>
+      <View>
+        <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 3 }}>
+          @{user.usuario}
+        </Text>
+        <Text style={{ fontSize: 13, fontWeight: "300" }}>
+          {user.nombre} {user.apellidos}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -23,7 +30,6 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
   },
   profileImg: {
     height: 60,
@@ -33,4 +39,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReviewItem;
+export default UserItem;

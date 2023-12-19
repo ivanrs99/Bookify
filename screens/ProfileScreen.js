@@ -28,7 +28,7 @@ import ReviewBody from "../components/ReviewBody";
 import { Divider, BottomSheet, ListItem } from "@rneui/themed";
 import defaultImg from "../assets/img_user.png";
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation, route }) => {
   const [items, setItems] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [imgUser, setImgUser] = useState(null);
@@ -38,13 +38,23 @@ const ProfileScreen = ({ navigation }) => {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const user = auth.currentUser;
+
+  const currentUser = auth.currentUser;
+  let user = null;
 
   useEffect(() => {
-    getData().then(() => {
+    if (route.params?.user) {
+      user = route.params?.user;
+    } else {
+      user = currentUser;
+    }
+
+    console.log(user);
+
+    getData(user).then(() => {
       setLoaded(true);
     });
-  }, []);
+  }, [route.params?.user]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -53,7 +63,7 @@ const ProfileScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const getData = async () => {
+  const getData = async (user) => {
     const reviews = await getReseñasFromUser(user.email);
     const userData = await findUserByEmail(user.email);
     const imgProfile = await getImg("perfil/", userData.usuario);
@@ -75,7 +85,7 @@ const ProfileScreen = ({ navigation }) => {
   const createItemsList = async (reviews) => {
     const promises = reviews.map(async (review) => {
       const book = await findBookById(review.libro);
-      const currentUserLiked = await isLiked(user.email, review.id);
+      const currentUserLiked = await isLiked(currentUser.email, review.id);
       const likes = await getTotalLikes(review.id);
       const item = {
         review: review,
@@ -222,7 +232,7 @@ const ProfileScreen = ({ navigation }) => {
               })}
               {items.length == 0 && (
                 <View style={{ marginTop: 20, alignItems: "center" }}>
-                  <Text>No tienes ninguna review publicada todavía.</Text>
+                  <Text>No hay ninguna review publicada todavía.</Text>
                 </View>
               )}
             </View>

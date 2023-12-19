@@ -52,6 +52,7 @@ const SearchStackNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="Search" screenOptions={screenOptions}>
       <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 };
