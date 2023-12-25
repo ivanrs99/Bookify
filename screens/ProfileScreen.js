@@ -22,6 +22,9 @@ import {
   findSeguidos,
   signOutUser,
   deleteReview,
+  isFollowed,
+  follow,
+  unfollow,
 } from "../database/firebaseFunctions";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ReviewBody from "../components/ReviewBody";
@@ -38,23 +41,35 @@ const ProfileScreen = ({ navigation, route }) => {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [userFollowed, setFollowed] = useState(false);
+  const [user, setUser] = useState(null);
 
   const currentUser = auth.currentUser;
-  let user = null;
 
   useEffect(() => {
-    if (route.params?.user) {
-      user = route.params?.user;
-    } else {
-      user = currentUser;
+    async function fetchData() {
+      if (route.params?.user) {
+        setUser(route.params?.user);
+        const followed = await isFollowed(
+          currentUser.email,
+          route.params?.user.email
+        );
+        setFollowed(followed);
+      } else {
+        setUser(currentUser);
+      }
     }
 
-    console.log(user);
+    fetchData();
+  }, [route.params?.user, currentUser]);
 
-    getData(user).then(() => {
-      setLoaded(true);
-    });
-  }, [route.params?.user]);
+  useEffect(() => {
+    if (user) {
+      getData().then(() => {
+        setLoaded(true);
+      });
+    }
+  }, [user]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -63,7 +78,7 @@ const ProfileScreen = ({ navigation, route }) => {
     setRefreshing(false);
   };
 
-  const getData = async (user) => {
+  const getData = async () => {
     const reviews = await getReseñasFromUser(user.email);
     const userData = await findUserByEmail(user.email);
     const imgProfile = await getImg("perfil/", userData.usuario);
@@ -138,6 +153,16 @@ const ProfileScreen = ({ navigation, route }) => {
     setItems(updatedReviews);
   };
 
+  const followUser = () => {
+    follow(currentUser.email, user.email);
+    setFollowed(true);
+  };
+
+  const unfollowUser = () => {
+    unfollow(currentUser.email, user.email);
+    setFollowed(false);
+  };
+
   return (
     <View style={styles.container}>
       {!isLoaded ? (
@@ -161,12 +186,33 @@ const ProfileScreen = ({ navigation, route }) => {
           </BottomSheet>
           <View style={styles.menu_user}>
             <Text style={styles.user}>@{userData.usuario}</Text>
-            <Ionicons
-              name="menu-outline"
-              color="white"
-              size={30}
-              onPress={() => setIsVisible(true)}
-            />
+            {route.params?.user == null ||
+            route.params?.user.email == currentUser.email ? (
+              <Ionicons
+                name="menu-outline"
+                color="white"
+                size={30}
+                onPress={() => setIsVisible(true)}
+              />
+            ) : (
+              <>
+                {userFollowed == true ? (
+                  <Ionicons
+                    name="person-remove-outline"
+                    color="white"
+                    size={30}
+                    onPress={unfollowUser}
+                  />
+                ) : (
+                  <Ionicons
+                    name="person-add-outline"
+                    color="white"
+                    size={30}
+                    onPress={followUser}
+                  />
+                )}
+              </>
+            )}
           </View>
           <ScrollView
             key={refreshKey}

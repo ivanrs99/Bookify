@@ -309,6 +309,44 @@ const findSeguidores = async (email) => {
   }
 };
 
+// Comprobar si un usuario sigue a otro
+const isFollowed = async (my_email, user_email) => {
+  const q = query(
+    collection(db, "seguidos"),
+    where("seguidor", "==", my_email),
+    where("seguido", "==", user_email),
+    limit(1)
+  );
+
+  const result = await getDocs(q);
+  return !result.empty;
+};
+
+// Seguir a un usuario
+const follow = async (my_email, user_email) => {
+  const followsRef = collection(db, "seguidos");
+  await addDoc(followsRef, {
+    seguidor: my_email,
+    seguido: user_email,
+  });
+};
+
+// Dejar de seguir a un usuario
+const unfollow = async (my_email, user_email) => {
+  const q = query(
+    collection(db, "seguidos"),
+    where("seguidor", "==", my_email),
+    where("seguido", "==", user_email),
+    limit(1)
+  );
+
+  const result = await getDocs(q);
+  if (!result.empty) {
+    const doc = result.docs[0];
+    await deleteDoc(doc.ref);
+  }
+};
+
 // Encontrar reseñas de una lista de usuarios
 const getReseñasFromUsers = async (users) => {
   const reseñas = [];
@@ -427,4 +465,7 @@ export {
   editUserData,
   deleteReview,
   findUserByParamContaining,
+  isFollowed,
+  follow,
+  unfollow,
 };
