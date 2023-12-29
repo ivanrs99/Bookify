@@ -10,6 +10,7 @@ import HomeScreen from "../screens/HomeScreen";
 import SearchScreen from "../screens/SearchScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import TabNavigator from "./TabNavigator";
+import UserListScreen from "../screens/UserListScreen";
 
 const Stack = createStackNavigator();
 
@@ -53,6 +54,7 @@ const SearchStackNavigator = () => {
     <Stack.Navigator initialRouteName="Search" screenOptions={screenOptions}>
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="ListStack" component={UserListStackNavigator} />
     </Stack.Navigator>
   );
 };
@@ -62,6 +64,16 @@ const ProfileStackNavigator = () => {
     <Stack.Navigator initialRouteName="Profile" screenOptions={screenOptions}>
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Edit" component={RegisterScreen} />
+      <Stack.Screen name="ListStack" component={UserListStackNavigator} />
+    </Stack.Navigator>
+  );
+};
+
+const UserListStackNavigator = () => {
+  return (
+    <Stack.Navigator initialRouteName="UserList" screenOptions={screenOptions}>
+      <Stack.Screen name="UserList" component={UserListScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 };
@@ -72,4 +84,5 @@ export {
   HomeStackNavigator,
   SearchStackNavigator,
   ProfileStackNavigator,
+  UserListStackNavigator,
 };

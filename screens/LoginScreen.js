@@ -97,7 +97,7 @@ const LoginScreen = ({ navigation }) => {
           onPress={login}
         />
         <View style={{ flexDirection: "row", marginTop: 30 }}>
-          <Text style={{ fontSize: 15 }}>No tienes cuenta? </Text>
+          <Text style={{ fontSize: 15 }}>¿No tienes cuenta? </Text>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("Register", {

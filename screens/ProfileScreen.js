@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import Wave from "../components/Wave";
 import global from "../global";
@@ -82,12 +83,8 @@ const ProfileScreen = ({ navigation, route }) => {
     const reviews = await getReseñasFromUser(user.email);
     const userData = await findUserByEmail(user.email);
     const imgProfile = await getImg("perfil/", userData.usuario);
-    findSeguidores(user.email).then((followers) =>
-      setFollowers(followers.length)
-    );
-    findSeguidos(user.email).then((following) =>
-      setFollowing(following.length)
-    );
+    findSeguidores(user.email).then((followers) => setFollowers(followers));
+    findSeguidos(user.email).then((following) => setFollowing(following));
     setUserData(userData);
     setImgUser(imgProfile);
 
@@ -161,6 +158,30 @@ const ProfileScreen = ({ navigation, route }) => {
   const unfollowUser = () => {
     unfollow(currentUser.email, user.email);
     setFollowed(false);
+  };
+
+  const searchFollowers = () => {
+    if (followers.length > 0) {
+      navigation.push("ListStack", {
+        screen: "UserList",
+        params: {
+          title: "Seguidores",
+          users: followers,
+        },
+      });
+    }
+  };
+
+  const searchFollowing = () => {
+    if (following.length > 0) {
+      navigation.push("ListStack", {
+        screen: "UserList",
+        params: {
+          title: "Siguiendo",
+          users: following,
+        },
+      });
+    }
   };
 
   return (
@@ -251,14 +272,18 @@ const ProfileScreen = ({ navigation, route }) => {
                 <Text style={styles.statsValue}>{items.length}</Text>
                 <Text style={styles.statsName}>Reseñas</Text>
               </View>
-              <View style={styles.statsGroup}>
-                <Text style={styles.statsValue}>{followers}</Text>
-                <Text style={styles.statsName}>Seguidores</Text>
-              </View>
-              <View style={styles.statsGroup}>
-                <Text style={styles.statsValue}>{following}</Text>
-                <Text style={styles.statsName}>Siguiendo</Text>
-              </View>
+              <TouchableOpacity onPress={searchFollowers}>
+                <View style={styles.statsGroup}>
+                  <Text style={styles.statsValue}>{followers.length}</Text>
+                  <Text style={styles.statsName}>Seguidores</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={searchFollowing}>
+                <View style={styles.statsGroup}>
+                  <Text style={styles.statsValue}>{following.length}</Text>
+                  <Text style={styles.statsName}>Siguiendo</Text>
+                </View>
+              </TouchableOpacity>
             </View>
             <Divider width={2} color="black" style={{ marginHorizontal: 10 }} />
             <View style={styles.reviewsContainer}>
