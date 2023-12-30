@@ -59,6 +59,8 @@ const HomeScreen = ({ navigation }) => {
     if (reviews.length > 0) {
       const result = await createItemsList(reviews);
       setItems(result);
+    } else {
+      setItems([]);
     }
     setRefreshKey((prevKey) => prevKey + 1);
   };
@@ -101,7 +103,9 @@ const HomeScreen = ({ navigation }) => {
       ) : (
         <>
           {items.length > 0 ? (
-            <View style={{ width: "100%", alignItems: "center" }}>
+            <View
+              style={{ width: "100%", height: "100%", alignItems: "center" }}
+            >
               <ScrollView
                 key={refreshKey}
                 style={{ width: "95%", marginTop: 35 }}
@@ -139,30 +143,45 @@ const HomeScreen = ({ navigation }) => {
             </View>
           ) : (
             <>
-              <Image
-                source={badface}
-                style={{
-                  width: 220,
-                  height: 100,
-                  resizeMode: "contain",
-                  marginBottom: 5,
+              <ScrollView
+                contentContainerStyle={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-              />
-              <Text style={{ fontSize: 16, fontWeight: "bold", margin: 10 }}>
-                Todavía no hay ninguna reseña para ver
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
-                <Text style={{ fontSize: 15 }}>
-                  Pulsa{" "}
-                  <Text
-                    style={{ fontSize: 15, color: global.PRIMARY_COLOR }}
-                    onPress={() => navigation.navigate("ReviewCreator")}
-                  >
-                    aquí
-                  </Text>{" "}
-                  para añadir la primera!
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={[global.PRIMARY_COLOR]}
+                  />
+                }
+              >
+                <Image
+                  source={badface}
+                  style={{
+                    width: 220,
+                    height: 100,
+                    resizeMode: "contain",
+                    marginBottom: 5,
+                  }}
+                />
+                <Text style={{ fontSize: 16, fontWeight: "bold", margin: 10 }}>
+                  Todavía no hay ninguna reseña para ver
                 </Text>
-              </View>
+                <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                  <Text style={{ fontSize: 15 }}>
+                    Pulsa{" "}
+                    <Text
+                      style={{ fontSize: 15, color: global.PRIMARY_COLOR }}
+                      onPress={() => navigation.navigate("ReviewCreator")}
+                    >
+                      aquí
+                    </Text>{" "}
+                    para añadir la primera!
+                  </Text>
+                </View>
+              </ScrollView>
             </>
           )}
         </>

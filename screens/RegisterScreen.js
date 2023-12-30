@@ -159,16 +159,19 @@ const RegisterScreen = ({ navigation, route }) => {
               <Input
                 placeholder="Usuario"
                 containerStyle={{ marginBottom: 10 }}
+                autoCapitalize="none"
                 onChangeText={(value) => setUser(value)}
               />
               <Input
                 placeholder="Email"
                 containerStyle={{ marginBottom: 10 }}
+                autoCapitalize="none"
                 onChangeText={(value) => setEmail(value)}
               />
               <Input
                 placeholder="Contraseña"
                 containerStyle={{ marginBottom: 10 }}
+                autoCapitalize="none"
                 onChangeText={(value) => setPassword(value)}
                 secureTextEntry={true}
               />

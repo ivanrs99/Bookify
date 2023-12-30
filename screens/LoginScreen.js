@@ -79,6 +79,7 @@ const LoginScreen = ({ navigation }) => {
           labelStyle={{ color: "black", fontWeight: "normal" }}
           placeholder="Usuario"
           value={user}
+          autoCapitalize="none"
           onChangeText={(value) => setUser(value)}
         />
         <Input
@@ -87,6 +88,7 @@ const LoginScreen = ({ navigation }) => {
           placeholder="Contraseña"
           secureTextEntry={true}
           value={password}
+          autoCapitalize="none"
           onChangeText={(value) => setPassword(value)}
         />
         <Button
