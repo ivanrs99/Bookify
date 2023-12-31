@@ -9,13 +9,12 @@ import { auth } from "../database/firebase";
 const ReviewBody = (props) => {
   const [liked, setLiked] = useState(props.liked);
   const [likes, setLikes] = useState(props.totalLikes);
-
   const { onDelete } = props;
   const img_review = props.review.url_img;
-  const descripcion = props.review.descripcion;
-  const titulo = props.book.titulo;
-  const autor = props.book.autor;
-  const puntuacion = props.review.puntuacion;
+  const description = props.review.descripcion;
+  const title = props.book.titulo;
+  const author = props.book.autor;
+  const score = props.review.puntuacion;
   const currentUser = auth.currentUser;
 
   const like = () => {
@@ -45,13 +44,13 @@ const ReviewBody = (props) => {
               width: "70%",
             }}
           >
-            {titulo}
+            {title}
           </Text>
-          <Text style={{ fontSize: 18, marginBottom: 6 }}>{autor}</Text>
+          <Text style={{ fontSize: 18, marginBottom: 6 }}>{author}</Text>
           <View style={{ flexDirection: "row" }}>
             <AirbnbRating
               count={5}
-              defaultRating={puntuacion}
+              defaultRating={score}
               showRating={false}
               size={20}
               isDisabled={true}
@@ -87,9 +86,9 @@ const ReviewBody = (props) => {
           </View>
         </View>
       </View>
-      {descripcion && (
+      {description && (
         <Text style={{ fontSize: 14, textAlign: "justify", marginTop: 17 }}>
-          {descripcion}
+          {description}
         </Text>
       )}
     </View>

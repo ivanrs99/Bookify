@@ -32,14 +32,14 @@ const ReviewCreatorScreen = ({ navigation }) => {
     };
   }, [navigation]);
 
-  const [titulo, setTitulo] = useState("");
-  const [autor, setAutor] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [puntuacion, setPuntuacion] = useState(1);
-  const [imagen, setImagen] = useState(null);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [description, setDescription] = useState("");
+  const [score, setScore] = useState(1);
+  const [image, setImage] = useState(null);
 
   const publish = async () => {
-    if (!titulo || !autor) {
+    if (!title || !author) {
       showMessage({
         message: "Error al crear la reseña",
         description: "El título y el autor son campos obligatorios.",
@@ -49,7 +49,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
     }
 
     const user = auth.currentUser;
-    await addReview(user.email, titulo, autor, puntuacion, descripcion, imagen);
+    await addReview(user.email, title, author, score, description, image);
     navigation.goBack();
   };
 
@@ -65,7 +65,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
       });
 
       if (!result.canceled) {
-        setImagen(result.assets[0].uri);
+        setImage(result.assets[0].uri);
       }
     }
   };
@@ -78,11 +78,8 @@ const ReviewCreatorScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.form}>
-        <Input
-          placeholder="Título"
-          onChangeText={(value) => setTitulo(value)}
-        />
-        <Input placeholder="Autor" onChangeText={(value) => setAutor(value)} />
+        <Input placeholder="Título" onChangeText={setTitle} />
+        <Input placeholder="Autor" onChangeText={setAuthor} />
         <View
           style={{
             width: "100%",
@@ -93,25 +90,25 @@ const ReviewCreatorScreen = ({ navigation }) => {
         >
           <AirbnbRating
             count={5}
-            defaultRating={puntuacion}
-            onFinishRating={setPuntuacion}
+            defaultRating={score}
+            onFinishRating={setScore}
             showRating={false}
             size={35}
           />
         </View>
         <TextInput
           style={styles.textInput}
-          value={descripcion}
-          onChangeText={setDescripcion}
+          value={description}
+          onChangeText={setDescription}
           placeholder="Escribe tu opinión... (opcional)"
           multiline={true}
           maxLength={100}
         />
-        {imagen && (
+        {image && (
           <View>
-            <Image source={{ uri: imagen }} style={styles.libroImg} />
+            <Image source={{ uri: image }} style={styles.bookImg} />
             <TouchableOpacity
-              onPress={() => setImagen(null)}
+              onPress={() => setImage(null)}
               style={{
                 position: "absolute",
                 top: -10,
@@ -189,7 +186,7 @@ const styles = StyleSheet.create({
     padding: 5,
     maxHeight: 110,
   },
-  libroImg: {
+  bookImg: {
     height: 165,
     width: 120,
     marginBottom: 20,

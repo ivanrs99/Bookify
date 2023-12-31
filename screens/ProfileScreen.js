@@ -44,7 +44,6 @@ const ProfileScreen = ({ navigation, route }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [userFollowed, setFollowed] = useState(false);
   const [user, setUser] = useState(null);
-
   const currentUser = auth.currentUser;
 
   useEffect(() => {
@@ -144,10 +143,9 @@ const ProfileScreen = ({ navigation, route }) => {
   ];
 
   const deleteReviewItem = (id) => {
-    deleteReview(id);
-
     const updatedReviews = items.filter((item) => item.review.id !== id);
     setItems(updatedReviews);
+    deleteReview(id);
   };
 
   const followUser = () => {
@@ -206,7 +204,7 @@ const ProfileScreen = ({ navigation, route }) => {
             ))}
           </BottomSheet>
           <View style={styles.menu_user}>
-            <Text style={styles.user}>@{userData.usuario}</Text>
+            <Text style={styles.textUser}>@{userData.usuario}</Text>
             {route.params?.user == null ||
             route.params?.user.email == currentUser.email ? (
               <Ionicons
@@ -337,7 +335,7 @@ const styles = StyleSheet.create({
     height: 40,
     zIndex: 1,
   },
-  user: {
+  textUser: {
     color: "white",
     flexGrow: 1,
     fontWeight: "bold",

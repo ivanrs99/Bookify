@@ -32,15 +32,9 @@ const HomeScreen = ({ navigation }) => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    //const unsubscribe = navigation.addListener("focus", () => {
     getData().then(() => {
       setLoaded(true);
     });
-    //});
-
-    /*return () => {
-      unsubscribe();
-    };*/
   }, []);
 
   const onRefresh = async () => {
@@ -62,21 +56,20 @@ const HomeScreen = ({ navigation }) => {
     } else {
       setItems([]);
     }
-    setRefreshKey((prevKey) => prevKey + 1);
   };
 
   const createItemsList = async (reviews) => {
-    const currentUser = auth.currentUser;
     const promises = reviews.map(async (review) => {
       const userData = await findUserByEmail(review.usuario);
-      const imgProfile = await getImg("perfil/", userData.usuario);
+      const img = await getImg("perfil/", userData.usuario);
       const book = await findBookById(review.libro);
-      const currentUserLiked = await isLiked(currentUser.email, review.id);
+      const currentUserLiked = await isLiked(auth.currentUser.email, review.id);
       const likes = await getTotalLikes(review.id);
+
       const item = {
         user: userData,
         review: review,
-        img_user: imgProfile,
+        img_user: img,
         book: book,
         totalLikes: likes,
         liked: currentUserLiked,
@@ -85,15 +78,13 @@ const HomeScreen = ({ navigation }) => {
     });
 
     const items = await Promise.all(promises);
-
     return items;
   };
 
   const deleteReviewItem = (id) => {
-    deleteReview(id);
-
     const updatedReviews = items.filter((item) => item.review.id !== id);
     setItems(updatedReviews);
+    deleteReview(id);
   };
 
   return (
@@ -175,13 +166,13 @@ const HomeScreen = ({ navigation }) => {
                 </Text>
                 <View style={{ flexDirection: "row", alignItems: "baseline" }}>
                   <Text style={{ fontSize: 15 }}>
-                    Pulsa{" "}
+                    Pulsa
                     <Text
                       style={{ fontSize: 15, color: global.PRIMARY_COLOR }}
                       onPress={() => navigation.navigate("ReviewCreator")}
                     >
                       aquí
-                    </Text>{" "}
+                    </Text>
                     para añadir la primera!
                   </Text>
                 </View>

@@ -12,7 +12,7 @@ import {
   findUser,
   signUp,
   signIn,
-  editUserData,
+  editUser,
 } from "../database/firebaseFunctions";
 
 const RegisterScreen = ({ navigation, route }) => {
@@ -114,7 +114,7 @@ const RegisterScreen = ({ navigation, route }) => {
       return;
     }
 
-    await editUserData(name, surname, user, image);
+    await editUser(name, surname, user, image);
     navigation.goBack();
   };
 
