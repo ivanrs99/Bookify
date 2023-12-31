@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import global from "../global";
-import logo from "../assets/no-logo.png";
+import logo from "../assets/logo.png";
 import { Input, Button } from "@rneui/themed";
 import { showMessage } from "react-native-flash-message";
 import { signIn, findUser } from "../database/firebaseFunctions";
@@ -72,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image source={logo} style={styles.logoImg} />
-      <Text style={styles.text}>Bienvenido!</Text>
+      <Text style={styles.text}>¡Bienvenido a Bookify!</Text>
       <View style={styles.formContainer}>
         <Input
           label="Usuario"
@@ -139,7 +139,8 @@ const styles = StyleSheet.create({
   logoImg: {
     height: 100,
     width: 100,
-    marginTop: 120,
+    marginTop: 130,
+    borderRadius: 50,
   },
   text: {
     color: "white",

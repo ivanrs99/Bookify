@@ -120,7 +120,11 @@ const HomeScreen = ({ navigation }) => {
                 {items.map((item, i) => {
                   return (
                     <View key={i} style={{ margin: 10 }}>
-                      <ReviewHeader user={item.user} img_user={item.img_user} />
+                      <ReviewHeader
+                        user={item.user}
+                        img_user={item.img_user}
+                        navigation={navigation}
+                      />
                       <ReviewBody
                         review={item.review}
                         book={item.book}

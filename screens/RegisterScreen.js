@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 import global from "../global";
 import imgUser from "../assets/img_user.png";
 import { Input, Button } from "@rneui/themed";
@@ -130,13 +131,29 @@ const RegisterScreen = ({ navigation, route }) => {
         </View>
         <View style={styles.formContainer}>
           {image ? (
-            <TouchableOpacity onPress={pickImage}>
-              <Image
-                source={{ uri: image }}
-                style={styles.profileImg}
-                onPress={pickImage}
-              />
-            </TouchableOpacity>
+            <View>
+              <TouchableOpacity onPress={pickImage}>
+                <Image
+                  source={{ uri: image }}
+                  style={styles.profileImg}
+                  onPress={pickImage}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setImage(null)}
+                style={{
+                  position: "absolute",
+                  top: -3,
+                  right: -3,
+                  backgroundColor: "black",
+                  zIndex: 1,
+                  paddingHorizontal: 2,
+                  borderRadius: 20,
+                }}
+              >
+                <FontAwesome name="close" size={22} color="white" />
+              </TouchableOpacity>
+            </View>
           ) : (
             <TouchableOpacity onPress={pickImage}>
               <Image source={imgUser} style={styles.profileImg} />

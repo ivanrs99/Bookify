@@ -5,7 +5,12 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import {
   collection,
   where,
@@ -64,6 +69,9 @@ const signUp = async (
 // Editar datos de usuario
 const editUserData = async (name, surname, user, img) => {
   if (img) uploadImg(img, user, "perfil/");
+  else {
+    removeImg("perfil/", user);
+  }
   const q = query(collection(db, "usuarios"), where("usuario", "==", user));
 
   try {
@@ -162,6 +170,19 @@ const getImg = async (ruta, nombre) => {
   } catch (error) {
     return null;
   }
+};
+
+// Borrar imagen
+const removeImg = async (route, name) => {
+  const imgRef = ref(storage, route + name);
+
+  deleteObject(imgRef)
+    .then(() => {
+      console.log("img removed");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 // Publicar reseña

@@ -1,19 +1,22 @@
 import React from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import user_default from "../assets/img_user.png";
 
-const ReviewItem = (props) => {
-  const username = props.user.usuario;
-  const img_user = props.img_user;
+const ReviewHeader = (props) => {
+  const { user, img_user, navigation } = props;
 
   return (
     <View style={styles.header}>
-      {img_user ? (
-        <Image source={{ uri: img_user }} style={styles.profileImg} />
-      ) : (
-        <Image source={user_default} style={styles.profileImg} />
-      )}
-      <Text style={{ fontSize: 17, fontWeight: "bold" }}>@{username}</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Profile", { user: props.user })}
+      >
+        {img_user ? (
+          <Image source={{ uri: img_user }} style={styles.profileImg} />
+        ) : (
+          <Image source={user_default} style={styles.profileImg} />
+        )}
+      </TouchableOpacity>
+      <Text style={{ fontSize: 17, fontWeight: "bold" }}>@{user.usuario}</Text>
     </View>
   );
 };
@@ -33,4 +36,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReviewItem;
+export default ReviewHeader;
