@@ -166,13 +166,13 @@ const HomeScreen = ({ navigation }) => {
                 </Text>
                 <View style={{ flexDirection: "row", alignItems: "baseline" }}>
                   <Text style={{ fontSize: 15 }}>
-                    Pulsa
+                    Pulsa{" "}
                     <Text
                       style={{ fontSize: 15, color: global.PRIMARY_COLOR }}
                       onPress={() => navigation.navigate("ReviewCreator")}
                     >
                       aquí
-                    </Text>
+                    </Text>{" "}
                     para añadir la primera!
                   </Text>
                 </View>

@@ -26,10 +26,11 @@ import {
   isFollowed,
   follow,
   unfollow,
+  deleteUserData,
 } from "../database/firebaseFunctions";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ReviewBody from "../components/ReviewBody";
-import { Divider, BottomSheet, ListItem } from "@rneui/themed";
+import { Divider, BottomSheet, ListItem, Dialog } from "@rneui/themed";
 import defaultImg from "../assets/img_user.png";
 
 const ProfileScreen = ({ navigation, route }) => {
@@ -42,6 +43,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
   const [userFollowed, setFollowed] = useState(false);
   const [user, setUser] = useState(null);
   const currentUser = auth.currentUser;
@@ -131,9 +133,31 @@ const ProfileScreen = ({ navigation, route }) => {
     });
   };
 
+  const deleteAccount = () => {
+    deleteUserData(auth.currentUser.email);
+    auth.currentUser.delete().then(() => {
+      signOutUser();
+    });
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  };
+
+  const toggleDialog = () => {
+    setDialogVisible(!dialogVisible);
+  };
+
   const menuItems = [
     { title: "Editar perfil", onPress: edit },
     { title: "Cerrar sesión", onPress: logOut },
+    {
+      title: "Eliminar cuenta",
+      containerStyle: { backgroundColor: "red" },
+      titleStyle: { color: "white" },
+      onPress: toggleDialog,
+    },
     {
       title: "Cancelar",
       containerStyle: { backgroundColor: "gray" },
@@ -188,6 +212,17 @@ const ProfileScreen = ({ navigation, route }) => {
         <ActivityIndicator size={100} color={global.PRIMARY_COLOR} />
       ) : (
         <View style={styles.profileContainer}>
+          <Dialog isVisible={dialogVisible} onBackdropPress={toggleDialog}>
+            <Dialog.Title title="Eliminando cuenta" />
+            <Text>
+              ¿Estás seguro de que deseas eliminar la cuenta y todos tus datos?
+              No será reversible.
+            </Text>
+            <Dialog.Actions>
+              <Dialog.Button title="Confirmar" onPress={deleteAccount} />
+              <Dialog.Button title="Cancelar" onPress={toggleDialog} />
+            </Dialog.Actions>
+          </Dialog>
           <BottomSheet modalProps={{}} isVisible={isVisible}>
             {menuItems.map((item, i) => (
               <ListItem

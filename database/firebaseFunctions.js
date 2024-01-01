@@ -22,6 +22,7 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  collectionGroup,
 } from "firebase/firestore";
 
 // Iniciar sesión
@@ -413,6 +414,81 @@ const isLiked = async (user_email, review_id) => {
   return !result.empty;
 };
 
+// BORRAR CUENTA
+const deleteUserData = async (email) => {
+  deleteReviews(email);
+  deleteFollowers(email);
+  deleteFollowings(email);
+  deleteLikes(email);
+
+  const userQuery = query(
+    collection(db, "usuarios"),
+    where("email", "==", email)
+  );
+  const result = await getDocs(userQuery);
+  const deletePromises = result.docs.map(async (doc) => {
+    const data = doc.data();
+    removeImg("perfil/", data.usuario);
+    await deleteDoc(doc.ref);
+  });
+
+  await Promise.all(deletePromises);
+};
+
+const deleteReviews = async (email) => {
+  const reviewsQuery = query(
+    collection(db, "reseñas"),
+    where("usuario", "==", email)
+  );
+
+  const result = await getDocs(reviewsQuery);
+  const deletePromises = result.docs.map(async (doc) => {
+    const data = doc.data();
+    if (data.url_img != "") {
+      removeImg("reseñas/", data.usuario + data.fecha);
+    }
+    await deleteDoc(doc.ref);
+  });
+
+  await Promise.all(deletePromises);
+};
+
+const deleteFollowers = async (email) => {
+  const followersQuery = query(
+    collection(db, "seguidos"),
+    where("seguido", "==", email)
+  );
+  const result = await getDocs(followersQuery);
+  const deletePromises = result.docs.map(async (doc) => {
+    await deleteDoc(doc.ref);
+  });
+
+  await Promise.all(deletePromises);
+};
+
+const deleteFollowings = async (email) => {
+  const followingQuery = query(
+    collection(db, "seguidos"),
+    where("seguidor", "==", email)
+  );
+  const result = await getDocs(followingQuery);
+  const deletePromises = result.docs.map(async (doc) => {
+    await deleteDoc(doc.ref);
+  });
+
+  await Promise.all(deletePromises);
+};
+
+const deleteLikes = async (email) => {
+  const likesQuery = query(collection(db, "likes"), where("user", "==", email));
+  const result = await getDocs(likesQuery);
+  const deletePromises = result.docs.map(async (doc) => {
+    await deleteDoc(doc.ref);
+  });
+
+  await Promise.all(deletePromises);
+};
+
 export {
   signIn,
   findUser,
@@ -436,4 +512,5 @@ export {
   isFollowed,
   follow,
   unfollow,
+  deleteUserData,
 };
