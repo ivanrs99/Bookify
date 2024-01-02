@@ -22,7 +22,6 @@ import {
   doc,
   deleteDoc,
   updateDoc,
-  collectionGroup,
 } from "firebase/firestore";
 
 // Iniciar sesión
@@ -153,13 +152,11 @@ const getImg = async (route, name) => {
 const removeImg = async (route, name) => {
   const imgRef = ref(storage, route + name);
 
-  deleteObject(imgRef)
-    .then(() => {
-      console.log("img removed");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  try {
+    deleteObject(imgRef);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // Publicar reseña
@@ -436,57 +433,76 @@ const deleteUserData = async (email) => {
 };
 
 const deleteReviews = async (email) => {
-  const reviewsQuery = query(
-    collection(db, "reseñas"),
-    where("usuario", "==", email)
-  );
+  try {
+    const reviewsQuery = query(
+      collection(db, "reseñas"),
+      where("usuario", "==", email)
+    );
 
-  const result = await getDocs(reviewsQuery);
-  const deletePromises = result.docs.map(async (doc) => {
-    const data = doc.data();
-    if (data.url_img != "") {
-      removeImg("reseñas/", data.usuario + data.fecha);
-    }
-    await deleteDoc(doc.ref);
-  });
+    const result = await getDocs(reviewsQuery);
+    const deletePromises = result.docs.map(async (doc) => {
+      const data = doc.data();
+      if (data.url_img != "") {
+        removeImg("reseñas/", data.usuario + data.fecha);
+      }
+      await deleteDoc(doc.ref);
+    });
 
-  await Promise.all(deletePromises);
+    await Promise.all(deletePromises);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const deleteFollowers = async (email) => {
-  const followersQuery = query(
-    collection(db, "seguidos"),
-    where("seguido", "==", email)
-  );
-  const result = await getDocs(followersQuery);
-  const deletePromises = result.docs.map(async (doc) => {
-    await deleteDoc(doc.ref);
-  });
+  try {
+    const followersQuery = query(
+      collection(db, "seguidos"),
+      where("seguido", "==", email)
+    );
+    const result = await getDocs(followersQuery);
+    const deletePromises = result.docs.map(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
 
-  await Promise.all(deletePromises);
+    await Promise.all(deletePromises);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const deleteFollowings = async (email) => {
-  const followingQuery = query(
-    collection(db, "seguidos"),
-    where("seguidor", "==", email)
-  );
-  const result = await getDocs(followingQuery);
-  const deletePromises = result.docs.map(async (doc) => {
-    await deleteDoc(doc.ref);
-  });
+  try {
+    const followingQuery = query(
+      collection(db, "seguidos"),
+      where("seguidor", "==", email)
+    );
+    const result = await getDocs(followingQuery);
+    const deletePromises = result.docs.map(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
 
-  await Promise.all(deletePromises);
+    await Promise.all(deletePromises);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const deleteLikes = async (email) => {
-  const likesQuery = query(collection(db, "likes"), where("user", "==", email));
-  const result = await getDocs(likesQuery);
-  const deletePromises = result.docs.map(async (doc) => {
-    await deleteDoc(doc.ref);
-  });
+  try {
+    const likesQuery = query(
+      collection(db, "likes"),
+      where("user", "==", email)
+    );
+    const result = await getDocs(likesQuery);
+    const deletePromises = result.docs.map(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
 
-  await Promise.all(deletePromises);
+    await Promise.all(deletePromises);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export {

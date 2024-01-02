@@ -133,15 +133,13 @@ const ProfileScreen = ({ navigation, route }) => {
     });
   };
 
-  const deleteAccount = () => {
-    deleteUserData(auth.currentUser.email);
+  const deleteAccount = async () => {
+    await deleteUserData(auth.currentUser.email);
     auth.currentUser.delete().then(() => {
-      signOutUser();
-    });
-
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Login" }],
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
     });
   };
 

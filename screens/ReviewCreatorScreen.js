@@ -102,7 +102,7 @@ const ReviewCreatorScreen = ({ navigation }) => {
           onChangeText={setDescription}
           placeholder="Escribe tu opinión... (opcional)"
           multiline={true}
-          maxLength={100}
+          maxLength={500}
         />
         {image && (
           <View>
