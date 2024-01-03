@@ -46,6 +46,7 @@ const HomeStackNavigator = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="ReviewCreator" component={ReviewCreatorScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="ListStack" component={UserListStackNavigator} />
     </Stack.Navigator>
   );
 };
