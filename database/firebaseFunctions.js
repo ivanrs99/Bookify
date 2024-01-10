@@ -42,40 +42,56 @@ const signOutUser = () => {
 
 // Registrar usuario
 const signUp = async (email, password, user, name, surname, image) => {
-  await createUserWithEmailAndPassword(auth, email, password);
-  const usuariosRef = collection(db, "usuarios");
-  await addDoc(usuariosRef, {
-    usuario: user,
-    email: email,
-    nombre: name,
-    apellidos: surname,
-  });
-  if (image) uploadImg(image, user, "perfil/");
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    const usuariosRef = collection(db, "usuarios");
+    await addDoc(usuariosRef, {
+      usuario: user,
+      email: email,
+      nombre: name,
+      apellidos: surname,
+    });
+    if (image) uploadImg(image, user, "perfil/");
 
-  showMessage({
-    message: "Bienvenido!",
-    description: "Usuario registrado con éxito.",
-    type: "success",
-  });
+    showMessage({
+      message: "Bienvenido!",
+      description: "Usuario registrado con éxito.",
+      type: "success",
+    });
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
+  }
 };
 
 // Editar datos de usuario
 const editUser = async (name, surname, user, img) => {
-  if (img) uploadImg(img, user, "perfil/");
-  else {
-    removeImg("perfil/", user);
-  }
+  try {
+    if (img) uploadImg(img, user, "perfil/");
+    else {
+      removeImg("perfil/", user);
+    }
 
-  const userQuery = query(
-    collection(db, "usuarios"),
-    where("usuario", "==", user)
-  );
-  const result = await getDocs(userQuery);
-  if (!result.empty) {
-    const userDoc = result.docs[0].ref;
-    await updateDoc(userDoc, {
-      nombre: name,
-      apellidos: surname,
+    const userQuery = query(
+      collection(db, "usuarios"),
+      where("usuario", "==", user)
+    );
+    const result = await getDocs(userQuery);
+    if (!result.empty) {
+      const userDoc = result.docs[0].ref;
+      await updateDoc(userDoc, {
+        nombre: name,
+        apellidos: surname,
+      });
+    }
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
     });
   }
 };
@@ -150,56 +166,78 @@ const getImg = async (route, name) => {
 
 // Borrar imagen
 const removeImg = async (route, name) => {
-  const imgRef = ref(storage, route + name);
-
   try {
+    const imgRef = ref(storage, route + name);
     deleteObject(imgRef);
   } catch (error) {
-    console.log(error);
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
 // Publicar reseña
 const addReview = async (email, title, author, score, description, image) => {
-  let book = await findBook(title, author);
-  if (book == null) {
-    await createBook(title, author);
-    book = await findBook(title, author);
+  try {
+    let book = await findBook(title, author);
+    if (book == null) {
+      await createBook(title, author);
+      book = await findBook(title, author);
+    }
+
+    const actualDate = new Date();
+    let url = "";
+    if (image) {
+      await uploadImg(image, email + actualDate.toISOString(), "reseñas/");
+      url = await getImg("reseñas/", email + actualDate.toISOString());
+    }
+
+    const reseñasRef = collection(db, "reseñas");
+    await addDoc(reseñasRef, {
+      libro: book.id,
+      usuario: email,
+      puntuacion: score,
+      descripcion: description,
+      fecha: actualDate.toISOString(),
+      url_img: url,
+    });
+
+    showMessage({
+      message: "Reseña publicada con éxito",
+      type: "success",
+    });
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
-
-  const actualDate = new Date();
-  let url = "";
-  if (image) {
-    await uploadImg(image, email + actualDate.toISOString(), "reseñas/");
-    url = await getImg("reseñas/", email + actualDate.toISOString());
-  }
-
-  const reseñasRef = collection(db, "reseñas");
-  await addDoc(reseñasRef, {
-    libro: book.id,
-    usuario: email,
-    puntuacion: score,
-    descripcion: description,
-    fecha: actualDate.toISOString(),
-    url_img: url,
-  });
-
-  showMessage({
-    message: "Reseña publicada con éxito",
-    type: "success",
-  });
 };
 
 // Borrar review
 const deleteReview = async (id) => {
-  const reviewDoc = doc(db, "reseñas", id);
-  await deleteDoc(reviewDoc);
+  try {
+    const reviewDoc = doc(db, "reseñas", id);
+    await deleteDoc(reviewDoc);
 
-  const likesQuery = query(collection(db, "likes"), where("review", "==", id));
+    const likesQuery = query(
+      collection(db, "likes"),
+      where("review", "==", id)
+    );
 
-  const likesList = await getDocs(likesQuery);
-  for (const like of likesList.docs) {
-    await deleteDoc(like.ref);
+    const likesList = await getDocs(likesQuery);
+    for (const like of likesList.docs) {
+      await deleteDoc(like.ref);
+    }
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
@@ -294,26 +332,42 @@ const isFollowed = async (my_email, user_email) => {
 
 // Seguir a un usuario
 const follow = async (my_email, user_email) => {
-  const followsRef = collection(db, "seguidos");
-  await addDoc(followsRef, {
-    seguidor: my_email,
-    seguido: user_email,
-  });
+  try {
+    const followsRef = collection(db, "seguidos");
+    await addDoc(followsRef, {
+      seguidor: my_email,
+      seguido: user_email,
+    });
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
+  }
 };
 
 // Dejar de seguir a un usuario
 const unfollow = async (my_email, user_email) => {
-  const followQuery = query(
-    collection(db, "seguidos"),
-    where("seguidor", "==", my_email),
-    where("seguido", "==", user_email),
-    limit(1)
-  );
+  try {
+    const followQuery = query(
+      collection(db, "seguidos"),
+      where("seguidor", "==", my_email),
+      where("seguido", "==", user_email),
+      limit(1)
+    );
 
-  const result = await getDocs(followQuery);
-  if (!result.empty) {
-    const doc = result.docs[0];
-    await deleteDoc(doc.ref);
+    const result = await getDocs(followQuery);
+    if (!result.empty) {
+      const doc = result.docs[0];
+      await deleteDoc(doc.ref);
+    }
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
@@ -365,26 +419,42 @@ const getReseñasFromUser = async (user) => {
 
 // Añadir like
 const likeReview = async (user_email, review_id) => {
-  const likesRef = collection(db, "likes");
-  await addDoc(likesRef, {
-    user: user_email,
-    review: review_id,
-  });
+  try {
+    const likesRef = collection(db, "likes");
+    await addDoc(likesRef, {
+      user: user_email,
+      review: review_id,
+    });
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
+  }
 };
 
 // Borrar like
 const removelikeReview = async (user_email, review_id) => {
-  const likeQuery = query(
-    collection(db, "likes"),
-    where("user", "==", user_email),
-    where("review", "==", review_id),
-    limit(1)
-  );
+  try {
+    const likeQuery = query(
+      collection(db, "likes"),
+      where("user", "==", user_email),
+      where("review", "==", review_id),
+      limit(1)
+    );
 
-  const result = await getDocs(likeQuery);
-  if (!result.empty) {
-    const likeDoc = result.docs[0];
-    await deleteDoc(likeDoc.ref);
+    const result = await getDocs(likeQuery);
+    if (!result.empty) {
+      const likeDoc = result.docs[0];
+      await deleteDoc(likeDoc.ref);
+    }
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
@@ -413,23 +483,31 @@ const isLiked = async (user_email, review_id) => {
 
 // BORRAR CUENTA
 const deleteUserData = async (email) => {
-  deleteReviews(email);
-  deleteFollowers(email);
-  deleteFollowings(email);
-  deleteLikes(email);
+  try {
+    deleteReviews(email);
+    deleteFollowers(email);
+    deleteFollowings(email);
+    deleteLikes(email);
 
-  const userQuery = query(
-    collection(db, "usuarios"),
-    where("email", "==", email)
-  );
-  const result = await getDocs(userQuery);
-  const deletePromises = result.docs.map(async (doc) => {
-    const data = doc.data();
-    removeImg("perfil/", data.usuario);
-    await deleteDoc(doc.ref);
-  });
+    const userQuery = query(
+      collection(db, "usuarios"),
+      where("email", "==", email)
+    );
+    const result = await getDocs(userQuery);
+    const deletePromises = result.docs.map(async (doc) => {
+      const data = doc.data();
+      removeImg("perfil/", data.usuario);
+      await deleteDoc(doc.ref);
+    });
 
-  await Promise.all(deletePromises);
+    await Promise.all(deletePromises);
+  } catch (error) {
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
+  }
 };
 
 const deleteReviews = async (email) => {
@@ -450,7 +528,11 @@ const deleteReviews = async (email) => {
 
     await Promise.all(deletePromises);
   } catch (error) {
-    console.log(error);
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
@@ -467,7 +549,11 @@ const deleteFollowers = async (email) => {
 
     await Promise.all(deletePromises);
   } catch (error) {
-    console.log(error);
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
@@ -484,7 +570,11 @@ const deleteFollowings = async (email) => {
 
     await Promise.all(deletePromises);
   } catch (error) {
-    console.log(error);
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
@@ -501,7 +591,11 @@ const deleteLikes = async (email) => {
 
     await Promise.all(deletePromises);
   } catch (error) {
-    console.log(error);
+    showMessage({
+      message: "ERROR",
+      description: error.message,
+      type: "danger",
+    });
   }
 };
 
